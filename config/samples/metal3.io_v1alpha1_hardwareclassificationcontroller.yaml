@@ -1,0 +1,18 @@
+apiVersion: metal3.io.sigs.k8s.io/v1alpha1
+kind: HardwareClassificationController
+metadata:
+  name: hardwareclassificationcontroller-sample
+spec:
+  # Add fields here
+  expectedValidationConfiguration:
+        - profileName: Profile 1
+          expectedCPU:
+                count: 72
+          expectedDisk:
+                sizeBytesGB: 25
+                numberOfDisks: 10
+          expectedNICS:
+                numberOfNICS: 26
+          expectedRAM: 16
+          expectedSystemVendor:
+                name: Dell Inc.
