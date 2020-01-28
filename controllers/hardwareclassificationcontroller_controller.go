@@ -17,12 +17,15 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	// "fmt"
 	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
 )
 
@@ -33,15 +36,24 @@ type HardwareClassificationControllerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+// Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
-
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
+	ctx := context.Background()
 	_ = r.Log.WithValues("hardwareclassificationcontroller", req.NamespacedName)
 
+	hardwareClassification := &metal3iov1alpha1.HardwareClassificationController{}
+
+	if err := r.Client.Get(ctx, req.NamespacedName, hardwareClassification); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
 	// your logic here
 
+	fmt.Println("OUTPUT************************", hardwareClassification.Spec.ExpectedHardwareConfiguration)
 	return ctrl.Result{}, nil
 }
 

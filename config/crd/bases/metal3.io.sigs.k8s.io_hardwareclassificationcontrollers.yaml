@@ -36,10 +36,63 @@ spec:
           description: HardwareClassificationControllerSpec defines the desired state
             of HardwareClassificationController
           properties:
-            foo:
+            expectedValidationConfiguration:
               description: Foo is an example field of HardwareClassificationController.
                 Edit HardwareClassificationController_types.go to remove/update
-              type: string
+              items:
+                description: ExpectedHardwareConfiguration details to match with the
+                  host
+                properties:
+                  expectedCPU:
+                    description: ExpectedCPU expected cpu count
+                    properties:
+                      count:
+                        type: integer
+                    required:
+                    - count
+                    type: object
+                  expectedDisk:
+                    description: ExpectedDisk size and number of disk needed
+                    properties:
+                      numberOfDisks:
+                        type: integer
+                      sizeBytesGB:
+                        type: integer
+                    required:
+                    - numberOfDisks
+                    - sizeBytesGB
+                    type: object
+                  expectedNICS:
+                    description: ExpectedNICS count of nics cards
+                    properties:
+                      numberOfNICS:
+                        type: integer
+                    required:
+                    - numberOfNICS
+                    type: object
+                  expectedRAM:
+                    type: integer
+                  expectedSystemVendor:
+                    description: ExpectedSystemVendor Vendor details
+                    properties:
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  profileName:
+                    type: string
+                required:
+                - expectedCPU
+                - expectedDisk
+                - expectedNICS
+                - expectedRAM
+                - expectedSystemVendor
+                - profileName
+                type: object
+              type: array
+          required:
+          - expectedValidationConfiguration
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed

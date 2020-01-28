@@ -28,7 +28,38 @@ type HardwareClassificationControllerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of HardwareClassificationController. Edit HardwareClassificationController_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	ExpectedHardwareConfiguration []ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+}
+
+// ExpectedHardwareConfiguration details to match with the host
+type ExpectedHardwareConfiguration struct {
+	ProfileName          string               `json:"profileName"`
+	ExpectedCPU          ExpectedCPU          `json:"expectedCPU"`
+	ExpectedDisk         ExpectedDisk         `json:"expectedDisk"`
+	ExpectedNICS         ExpectedNICS         `json:"expectedNICS"`
+	ExpectedRAM          int                  `json:"expectedRAM"`
+	ExpectedSystemVendor ExpectedSystemVendor `json:"expectedSystemVendor"`
+}
+
+// ExpectedCPU expected cpu count
+type ExpectedCPU struct {
+	Count int `json:"count"`
+}
+
+// ExpectedDisk size and number of disk needed
+type ExpectedDisk struct {
+	SizeBytesGB   int `json:"sizeBytesGB"`
+	NumberOfDisks int `json:"numberOfDisks"`
+}
+
+// ExpectedNICS count of nics cards
+type ExpectedNICS struct {
+	NumberOfNICS int `json:"numberOfNICS"`
+}
+
+// ExpectedSystemVendor Vendor details
+type ExpectedSystemVendor struct {
+	Name string `json:"name"`
 }
 
 // HardwareClassificationControllerStatus defines the observed state of HardwareClassificationController

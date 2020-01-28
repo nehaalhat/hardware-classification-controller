@@ -4,4 +4,15 @@ metadata:
   name: hardwareclassificationcontroller-sample
 spec:
   # Add fields here
-  foo: bar
+  expectedValidationConfiguration:
+        - profileName: Profile 1
+          expectedCPU:
+                count: 72
+          expectedDisk:
+                sizeBytesGB: 25
+                numberOfDisks: 10
+          expectedNICS:
+                numberOfNICS: 26
+          expectedRAM: 16
+          expectedSystemVendor:
+                name: Dell Inc.
