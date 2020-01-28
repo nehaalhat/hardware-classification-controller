@@ -7,12 +7,23 @@ spec:
   expectedValidationConfiguration:
         - profileName: Profile 1
           expectedCPU:
-                count: 72
+                count: 4
           expectedDisk:
                 sizeBytesGB: 25
-                numberOfDisks: 10
+                numberOfDisks: 2
           expectedNICS:
-                numberOfNICS: 26
+                numberOfNICS: 4
+          expectedRAM: 8
+          expectedSystemVendor:
+                name: Dell Inc.
+        - profileName: Profile 2
+          expectedCPU:
+                count: 8
+          expectedDisk:
+                sizeBytesGB: 50
+                numberOfDisks: 4
+          expectedNICS:
+                numberOfNICS: 8
           expectedRAM: 16
           expectedSystemVendor:
                 name: Dell Inc.
