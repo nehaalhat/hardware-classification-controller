@@ -83,8 +83,11 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	//clear an error if one was previously set
 	clearErrorBMMachine(capbmMachine)
 
+	fmt.Println("CAPMMachine Details *****************", capbmMachine)
+
 	// Fetch the Machine.
 	capiMachine, err := util.GetOwnerMachine(ctx, r.Client, capbmMachine.ObjectMeta)
+	fmt.Println("Capimachine Details *****************", capiMachine)
 
 	if err != nil {
 		return ctrl.Result{}, errors.Wrapf(err, "BareMetalMachine's owner Machine could not be retrieved")
@@ -104,6 +107,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 		return ctrl.Result{}, errors.Wrapf(err, "BareMetalMachine's owner Machine is missing label or the cluster does not exist")
 	}
+
+	fmt.Println("Cluster Details *****************", cluster)
 
 	if cluster == nil {
 		setErrorBMMachine(capbmMachine, fmt.Sprintf(
@@ -126,6 +131,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	if err != nil {
 		return ctrl.Result{}, errors.Wrapf(err, "failed to create helper for managing the machineMgr")
 	}
+	fmt.Println("MachineMgr Details *****************", machineMgr)
 
 	fetchHostList(ctx, machineMgr)
 
