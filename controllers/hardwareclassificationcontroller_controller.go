@@ -83,7 +83,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	//clear an error if one was previously set
 	clearErrorBMMachine(capbmMachine)
 
-	fmt.Println("CAPMMachine Details *****************", capbmMachine)
+	// fmt.Println("CAPMMachine Details *****************", capbmMachine)
+	fmt.Println("Client Details *****************", r.Client)
 
 	// Fetch the Machine.
 	capiMachine, err := util.GetOwnerMachine(ctx, r.Client, capbmMachine.ObjectMeta)
@@ -145,7 +146,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	}
 	// your logic here
 
-	fmt.Println("OUTPUT************************", hardwareClassification.Spec.ExpectedHardwareConfiguration)
+	// fmt.Println("OUTPUT************************", hardwareClassification.Spec.ExpectedHardwareConfiguration)
 	return ctrl.Result{}, nil
 }
 
