@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -57,6 +58,21 @@ type MachineManager struct {
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 	machineLog := r.Log.WithValues("hardwareclassificationcontroller", req.NamespacedName)
+
+	// get list of BMH
+	hosts := bmh.BareMetalHostList{}
+	opts := &client.ListOptions{
+		Namespace: "metal3",
+	}
+
+	err := r.Client.List(ctx, &hosts, opts)
+	if err != nil {
+		//return nil, err
+		fmt.Println("*****Error aala bhau", err)
+		return ctrl.Result{}, errors.Wrap(err, "failed to init patch helper")
+	}
+
+	fmt.Println("*******Host List", hosts)
 
 	// Fetch the BareMetalMachine instance.
 	capbmMachine := &metal3iov1alpha1.HardwareClassificationController{}
