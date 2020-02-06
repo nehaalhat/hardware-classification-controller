@@ -21,7 +21,7 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	k8s.io/apimachinery v0.0.0-20191004115801-a2eda9f80ab8
 	k8s.io/client-go v0.0.0-20191016111102-bec269661e48
-	k8s.io/klog v1.0.0 // indirect
+	k8s.io/klog v1.0.0
 	k8s.io/utils v0.0.0-20190809000727-6c36bc71fc4a
 	sigs.k8s.io/cluster-api v0.2.7
 	sigs.k8s.io/controller-runtime v0.3.1-0.20191029211253-40070e2a1958

@@ -4,6 +4,7 @@ metadata:
   name: hardwareclassificationcontroller-sample
 spec:
   # Add fields here
+  namespace: metal3
   expectedValidationConfiguration:
         - profileName: Profile 1
           expectedCPU:

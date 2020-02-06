@@ -24,6 +24,7 @@ import (
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -41,47 +42,51 @@ type HardwareClassificationControllerReconciler struct {
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
-	extractedProfileList := extractExpectedHardwareConfiguration(ctx, r, req)
-	if extractedProfileList == nil && len(extractedProfileList) == 0 {
-		return ctrl.Result{}, nil
-	}
-
-	fmt.Printf("OUTPUT**************** %+v\n", extractedProfileList)
-
-	bmhHostList := fetchBmhHostList(ctx, r)
-
-	fmt.Println("*******Host List", bmhHostList)
-
-	return ctrl.Result{}, nil
-}
-
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler) bmh.BareMetalHostList {
-	// get list of BMH
-	hosts := bmh.BareMetalHostList{}
-	opts := &client.ListOptions{
-		Namespace: "metal3",
-	}
-
-	err := r.Client.List(ctx, &hosts, opts)
-	if err != nil {
-		//return nil, err
-		fmt.Println("*****Error", err)
-	}
-	return hosts
-}
-
-// ExtractExpectedHardwareConfiguration extracts Expected Hardware Configuration
-func extractExpectedHardwareConfiguration(ctx context.Context, r *HardwareClassificationControllerReconciler, req ctrl.Request) []hwcc.ExpectedHardwareConfiguration {
-
 	hardwareClassification := &hwcc.HardwareClassificationController{}
 	if err := r.Client.Get(ctx, req.NamespacedName, hardwareClassification); err != nil {
 		if apierrors.IsNotFound(err) {
-			return nil
+			return ctrl.Result{}, nil
 		}
-		return nil
+		return ctrl.Result{}, err
 	}
 
-	return hardwareClassification.Spec.ExpectedHardwareConfiguration
+	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
+
+	bmhHostList := fetchBmhHostList(ctx, r, req, hardwareClassification)
+
+	fmt.Printf("Extracted Profile List******** %+v", extractedProfileList)
+	fmt.Printf("BMH List******** %+v", bmhHostList)
+	return ctrl.Result{}, nil
+}
+
+func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, req ctrl.Request, hwcc *hwcc.HardwareClassificationController) bmh.BareMetalHostList {
+
+	bmhHostList := bmh.BareMetalHostList{}
+	validHostList := bmh.BareMetalHostList{}
+	opts := &client.ListOptions{
+		Namespace: hwcc.Spec.Namespace,
+	}
+
+	// get list of BMH
+	err := r.Client.List(ctx, &bmhHostList, opts)
+	if err != nil {
+		setError(hwcc, "Failed to get BareMetalHost List")
+	}
+
+	for host := 0; host < len(bmhHostList.Items); host++ {
+		if bmhHostList.Items[host].Status.Provisioning.State == "ready" {
+			validHostList.Items = append(validHostList.Items, bmhHostList.Items[host])
+		}
+	}
+	return validHostList
+}
+
+// setError sets the ErrorMessage and ErrorReason fields on the baremetalmachine
+func setError(hwcc *hwcc.HardwareClassificationController, message string) {
+
+	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
+	//hwcc.Status.ErrorReason = &reason
+
 }
 
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {

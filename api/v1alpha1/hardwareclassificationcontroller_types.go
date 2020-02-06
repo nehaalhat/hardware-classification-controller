@@ -28,6 +28,7 @@ type HardwareClassificationControllerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of HardwareClassificationController. Edit HardwareClassificationController_types.go to remove/update
+	Namespace                     string                          `json:"namespace"`
 	ExpectedHardwareConfiguration []ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
 }
 

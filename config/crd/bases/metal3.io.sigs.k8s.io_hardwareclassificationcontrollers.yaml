@@ -37,8 +37,6 @@ spec:
             of HardwareClassificationController
           properties:
             expectedValidationConfiguration:
-              description: Foo is an example field of HardwareClassificationController.
-                Edit HardwareClassificationController_types.go to remove/update
               items:
                 description: ExpectedHardwareConfiguration details to match with the
                   host
@@ -91,8 +89,13 @@ spec:
                 - profileName
                 type: object
               type: array
+            namespace:
+              description: Foo is an example field of HardwareClassificationController.
+                Edit HardwareClassificationController_types.go to remove/update
+              type: string
           required:
           - expectedValidationConfiguration
+          - namespace
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed
