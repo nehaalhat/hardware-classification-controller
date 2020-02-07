@@ -99,8 +99,6 @@ var _ = Describe("Test Fech BMH List", func() {
 				Expect(len(result)).To(Equal(len(tc.ExpectedHosts)))
 			} else {
 				for i, host := range tc.ExpectedHosts {
-					//fmt.Println("Result******", result[i].Name)
-					//fmt.Println("Host Name******", host.Name)
 					Expect(result[i].Name).To(Equal(host.Name))
 				}
 			}
