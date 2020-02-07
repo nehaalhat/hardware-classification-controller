@@ -62,7 +62,7 @@ var _ = Describe("Test Fech BMH List", func() {
 		},
 		Status: bmh.BareMetalHostStatus{
 			Provisioning: bmh.ProvisionStatus{
-				State: bmh.StateReady,
+				State: bmh.StateInspecting,
 			},
 		},
 	}

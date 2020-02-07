@@ -75,7 +75,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	}
 
 	for host := 0; host < len(bmhHostList.Items); host++ {
-		if bmhHostList.Items[host].Status.Provisioning.State == "ready" {
+		if bmhHostList.Items[host].Status.Provisioning.State == "ready" || bmhHostList.Items[host].Status.Provisioning.State == "inspecting" {
 			validHostList = append(validHostList, bmhHostList.Items[host])
 		}
 	}
@@ -85,7 +85,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 // setError sets the ErrorMessage field on the baremetalmachine
 func setError(hwcc *hwcc.HardwareClassificationController, message string) {
 	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
-	
+
 }
 
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
