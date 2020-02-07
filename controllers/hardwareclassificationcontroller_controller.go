@@ -17,7 +17,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-logr/logr"
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
@@ -51,42 +50,42 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	}
 
 	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
+	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
 
-	bmhHostList := fetchBmhHostList(ctx, r, req, hardwareClassification)
+	bmhHostList := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
+	r.Log.Info("Extracted expected hardware configuration successfully", "BareMetalHostList", bmhHostList)
 
-	fmt.Printf("Extracted Profile List******** %+v", extractedProfileList)
-	fmt.Printf("BMH List******** %+v", bmhHostList)
 	return ctrl.Result{}, nil
 }
 
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, req ctrl.Request, hwcc *hwcc.HardwareClassificationController) bmh.BareMetalHostList {
+func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
 
 	bmhHostList := bmh.BareMetalHostList{}
-	validHostList := bmh.BareMetalHostList{}
+	validHostList := []bmh.BareMetalHost{}
+	hardwareClassification := &hwcc.HardwareClassificationController{}
+
 	opts := &client.ListOptions{
-		Namespace: hwcc.Spec.Namespace,
+		Namespace: namespace,
 	}
 
 	// get list of BMH
 	err := r.Client.List(ctx, &bmhHostList, opts)
 	if err != nil {
-		setError(hwcc, "Failed to get BareMetalHost List")
+		setError(hardwareClassification, "Failed to get BareMetalHost List")
 	}
 
 	for host := 0; host < len(bmhHostList.Items); host++ {
 		if bmhHostList.Items[host].Status.Provisioning.State == "ready" {
-			validHostList.Items = append(validHostList.Items, bmhHostList.Items[host])
+			validHostList = append(validHostList, bmhHostList.Items[host])
 		}
 	}
 	return validHostList
 }
 
-// setError sets the ErrorMessage and ErrorReason fields on the baremetalmachine
+// setError sets the ErrorMessage field on the baremetalmachine
 func setError(hwcc *hwcc.HardwareClassificationController, message string) {
-
 	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
-	//hwcc.Status.ErrorReason = &reason
-
+	
 }
 
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
