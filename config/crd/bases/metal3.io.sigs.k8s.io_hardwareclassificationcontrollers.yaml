@@ -42,7 +42,7 @@ spec:
                   host
                 properties:
                   expectedCPU:
-                    description: ExpectedCPU expected cpu count
+                    description: Expected cpu count
                     properties:
                       count:
                         type: integer
@@ -50,7 +50,7 @@ spec:
                     - count
                     type: object
                   expectedDisk:
-                    description: ExpectedDisk size and number of disk needed
+                    description: ExpectedDisk size and number of disks
                     properties:
                       numberOfDisks:
                         type: integer
@@ -59,6 +59,24 @@ spec:
                     required:
                     - numberOfDisks
                     - sizeBytesGB
+                    type: object
+                  expectedFirmware:
+                    description: Expected Firmware details
+                    properties:
+                      version:
+                        description: Firmware Version details
+                        properties:
+                          BIOS:
+                            type: string
+                          BaseBandManagement:
+                            type: string
+                          IDRAC:
+                            type: string
+                          RAID:
+                            type: string
+                        type: object
+                    required:
+                    - version
                     type: object
                   expectedNICS:
                     description: ExpectedNICS count of nics cards
@@ -71,7 +89,7 @@ spec:
                   expectedRAM:
                     type: integer
                   expectedSystemVendor:
-                    description: ExpectedSystemVendor Vendor details
+                    description: Expected SystemVendor details
                     properties:
                       name:
                         type: string
@@ -83,6 +101,7 @@ spec:
                 required:
                 - expectedCPU
                 - expectedDisk
+                - expectedFirmware
                 - expectedNICS
                 - expectedRAM
                 - expectedSystemVendor

@@ -52,13 +52,16 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
 
-	bmhHostList := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
-	r.Log.Info("Extracted expected hardware configuration successfully", "BareMetalHostList", bmhHostList)
+	bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", bmhHostList)
 
 	return ctrl.Result{}, nil
 }
 
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
+func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, error) {
 
 	bmhHostList := bmh.BareMetalHostList{}
 	validHostList := []bmh.BareMetalHost{}
@@ -72,6 +75,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	err := r.Client.List(ctx, &bmhHostList, opts)
 	if err != nil {
 		setError(hardwareClassification, "Failed to get BareMetalHost List")
+		return validHostList, err
 	}
 
 	for host := 0; host < len(bmhHostList.Items); host++ {
@@ -79,7 +83,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 			validHostList = append(validHostList, bmhHostList.Items[host])
 		}
 	}
-	return validHostList
+	return validHostList, nil
 }
 
 // setError sets the ErrorMessage field on the baremetalmachine

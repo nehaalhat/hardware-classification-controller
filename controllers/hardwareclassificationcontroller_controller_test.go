@@ -93,7 +93,13 @@ var _ = Describe("Test Fech BMH List", func() {
 				Log:    klogr.New(),
 			}
 
-			result := fetchBmhHostList(context.TODO(), &r, tc.Namespace)
+			result, err := fetchBmhHostList(context.TODO(), &r, tc.Namespace)
+
+			if err != nil {
+				Expect(err).To(HaveOccurred())
+			} else {
+				Expect(err).NotTo(HaveOccurred())
+			}
 
 			if len(tc.ExpectedHosts) == 0 {
 				Expect(len(result)).To(Equal(len(tc.ExpectedHosts)))

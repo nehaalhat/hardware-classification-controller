@@ -40,14 +40,15 @@ type ExpectedHardwareConfiguration struct {
 	ExpectedNICS         ExpectedNICS         `json:"expectedNICS"`
 	ExpectedRAM          int                  `json:"expectedRAM"`
 	ExpectedSystemVendor ExpectedSystemVendor `json:"expectedSystemVendor"`
+	ExpectedFirmware     ExpectedFirmware     `json:"expectedFirmware"`
 }
 
-// ExpectedCPU expected cpu count
+// Expected cpu count
 type ExpectedCPU struct {
 	Count int `json:"count"`
 }
 
-// ExpectedDisk size and number of disk needed
+// ExpectedDisk size and number of disks
 type ExpectedDisk struct {
 	SizeBytesGB   int `json:"sizeBytesGB"`
 	NumberOfDisks int `json:"numberOfDisks"`
@@ -58,9 +59,28 @@ type ExpectedNICS struct {
 	NumberOfNICS int `json:"numberOfNICS"`
 }
 
-// ExpectedSystemVendor Vendor details
+// Expected SystemVendor details
+// +optional
 type ExpectedSystemVendor struct {
 	Name string `json:"name"`
+}
+
+// Expected Firmware details
+// +optional
+type ExpectedFirmware struct {
+	Version Version `json:"version"`
+}
+
+// Firmware Version details
+type Version struct {
+	// +optional
+	RAID string `json:"RAID"`
+	// +optional
+	BasebandManagement string `json:"BaseBandManagement"`
+	// +optional
+	BIOS string `json:"BIOS"`
+	// +optional
+	IDRAC string `json:"IDRAC"`
 }
 
 // HardwareClassificationControllerStatus defines the observed state of HardwareClassificationController
