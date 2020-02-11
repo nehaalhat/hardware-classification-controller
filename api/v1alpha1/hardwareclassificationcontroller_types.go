@@ -28,46 +28,46 @@ type HardwareClassificationControllerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Namespace under which BareMetalHosts are present
-	Namespace                     string                          `json:"namespace"`
-	ExpectedHardwareConfiguration []ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+	Namespace                    string                         `json:"namespace"`
+	MinimumHardwareConfiguration []MinimumHardwareConfiguration `json:"minimumValidationConfiguration"`
 }
 
-// ExpectedHardwareConfiguration details to match with the host
-type ExpectedHardwareConfiguration struct {
-	ProfileName          string               `json:"profileName"`
-	ExpectedCPU          ExpectedCPU          `json:"expectedCPU"`
-	ExpectedDisk         ExpectedDisk         `json:"expectedDisk"`
-	ExpectedNICS         ExpectedNICS         `json:"expectedNICS"`
-	ExpectedRAM          int                  `json:"expectedRAM"`
-	ExpectedSystemVendor ExpectedSystemVendor `json:"expectedSystemVendor"`
-	ExpectedFirmware     ExpectedFirmware     `json:"expectedFirmware"`
+// MinimumHardwareConfiguration details to match with the host
+type MinimumHardwareConfiguration struct {
+	ProfileName string      `json:"profileName"`
+	MinimumCPU  MinimumCPU  `json:"minimumCPU"`
+	MinimumDisk MinimumDisk `json:"minimumDisk"`
+	MinimumNICS MinimumNICS `json:"minimumNICS"`
+	MinimumRAM  int         `json:"minimumRAM"`
+	// +optional
+	SystemVendor SystemVendor `json:"systemVendor"`
+	// +optional
+	Firmware Firmware `json:"firmware"`
 }
 
-// Expected cpu count
-type ExpectedCPU struct {
+// Minimum cpu count
+type MinimumCPU struct {
 	Count int `json:"count"`
 }
 
-// ExpectedDisk size and number of disks
-type ExpectedDisk struct {
+// MinimumDisk size and number of disks
+type MinimumDisk struct {
 	SizeBytesGB   int `json:"sizeBytesGB"`
 	NumberOfDisks int `json:"numberOfDisks"`
 }
 
-// ExpectedNICS count of nics cards
-type ExpectedNICS struct {
+// MinimumNICS count of nics cards
+type MinimumNICS struct {
 	NumberOfNICS int `json:"numberOfNICS"`
 }
 
-// Expected SystemVendor details
-// +optional
-type ExpectedSystemVendor struct {
+// SystemVendor details
+type SystemVendor struct {
 	Name string `json:"name"`
 }
 
-// Expected Firmware details
-// +optional
-type ExpectedFirmware struct {
+// Firmware details
+type Firmware struct {
 	Version Version `json:"version"`
 }
 

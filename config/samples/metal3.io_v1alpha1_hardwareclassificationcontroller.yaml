@@ -4,26 +4,27 @@ metadata:
   name: hardwareclassificationcontroller-sample
 spec:
   namespace: metal3
-  expectedValidationConfiguration:
+  minimumValidationConfiguration:
         - profileName: Profile 1
-          expectedCPU:
+          minimumCPU:
                 count: 4
-          expectedDisk:
+          minimumDisk:
                 sizeBytesGB: 25
                 numberOfDisks: 2
-          expectedNICS:
+          minimumNICS:
                 numberOfNICS: 4
-          expectedRAM: 8
-          expectedSystemVendor:
+          minimumRAM: 8
+          systemVendor:
                 name: Dell Inc.
+          firmware:
+                version:
+                    RAID: "RAID1"
         - profileName: Profile 2
-          expectedCPU:
+          minimumCPU:
                 count: 8
-          expectedDisk:
+          minimumDisk:
                 sizeBytesGB: 50
                 numberOfDisks: 4
-          expectedNICS:
+          minimumNICS:
                 numberOfNICS: 8
-          expectedRAM: 16
-          expectedSystemVendor:
-                name: Dell Inc.
+          minimumRAM: 16

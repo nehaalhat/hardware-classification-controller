@@ -36,32 +36,13 @@ spec:
           description: HardwareClassificationControllerSpec defines the desired state
             of HardwareClassificationController
           properties:
-            expectedValidationConfiguration:
+            minimumValidationConfiguration:
               items:
-                description: ExpectedHardwareConfiguration details to match with the
+                description: MinimumHardwareConfiguration details to match with the
                   host
                 properties:
-                  expectedCPU:
-                    description: Expected cpu count
-                    properties:
-                      count:
-                        type: integer
-                    required:
-                    - count
-                    type: object
-                  expectedDisk:
-                    description: ExpectedDisk size and number of disks
-                    properties:
-                      numberOfDisks:
-                        type: integer
-                      sizeBytesGB:
-                        type: integer
-                    required:
-                    - numberOfDisks
-                    - sizeBytesGB
-                    type: object
-                  expectedFirmware:
-                    description: Expected Firmware details
+                  firmware:
+                    description: Firmware details
                     properties:
                       version:
                         description: Firmware Version details
@@ -78,33 +59,50 @@ spec:
                     required:
                     - version
                     type: object
-                  expectedNICS:
-                    description: ExpectedNICS count of nics cards
+                  minimumCPU:
+                    description: Minimum cpu count
+                    properties:
+                      count:
+                        type: integer
+                    required:
+                    - count
+                    type: object
+                  minimumDisk:
+                    description: MinimumDisk size and number of disks
+                    properties:
+                      numberOfDisks:
+                        type: integer
+                      sizeBytesGB:
+                        type: integer
+                    required:
+                    - numberOfDisks
+                    - sizeBytesGB
+                    type: object
+                  minimumNICS:
+                    description: MinimumNICS count of nics cards
                     properties:
                       numberOfNICS:
                         type: integer
                     required:
                     - numberOfNICS
                     type: object
-                  expectedRAM:
+                  minimumRAM:
                     type: integer
-                  expectedSystemVendor:
-                    description: Expected SystemVendor details
+                  profileName:
+                    type: string
+                  systemVendor:
+                    description: SystemVendor details
                     properties:
                       name:
                         type: string
                     required:
                     - name
                     type: object
-                  profileName:
-                    type: string
                 required:
-                - expectedCPU
-                - expectedDisk
-                - expectedFirmware
-                - expectedNICS
-                - expectedRAM
-                - expectedSystemVendor
+                - minimumCPU
+                - minimumDisk
+                - minimumNICS
+                - minimumRAM
                 - profileName
                 type: object
               type: array
@@ -112,7 +110,7 @@ spec:
               description: Namespace under which BareMetalHosts are present
               type: string
           required:
-          - expectedValidationConfiguration
+          - minimumValidationConfiguration
           - namespace
           type: object
         status:
