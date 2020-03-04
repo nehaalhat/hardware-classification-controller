@@ -17,17 +17,19 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/cluster-api/util"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -57,6 +59,11 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
+
+	
+	// Fetch the Machine.
+	capiMachine, err := util.GetOwnerMachine(ctx, r.Client, hardwareClassification.ObjectMeta)
+	fmt.Println(capiMachine)
 
 	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
 	bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
