@@ -1,11 +1,8 @@
 /*
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +14,16 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -57,8 +56,21 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
 
+	// Get expression rules from hardwareClassification
+	expression_rules := hardwareClassification.Spec.Rules
+	r.Log.Info("Extracted expression rules successfully", "expression_rules", expression_rules)
+
+	// Check oneOf customFilter and expression rules is passed
+	if extractedProfileList.CustomFilter != "" && len(expression_rules) > 0 {
+		hwcc := &hwcc.HardwareClassificationController{}
+		errReason := "oneOf customFilter and expression rules can be passed"
+		setValidationError(hwcc, errReason)
+		//test.ErrorReason = pointer.StringPtr(errReason)
+		fmt.Println("ERROR***************************", hwcc.Spec.ValidationError.ErrorReason)
+	}
+
 	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
-	bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
+	bmhHostList, err := fetchBmhHostList(ctx, r, extractedProfileList.Namespace)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -73,6 +85,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	validHostList := []bmh.BareMetalHost{}
 	hardwareClassification := &hwcc.HardwareClassificationController{}
 
+	fmt.Println("Namespace********", namespace)
 	opts := &client.ListOptions{
 		Namespace: namespace,
 	}
@@ -92,6 +105,11 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	}
 
 	return validHostList, nil
+}
+
+// setValidationError sets the validation errors
+func setValidationError(hwcc *hwcc.HardwareClassificationController, message string) {
+	hwcc.Spec.ValidationError.ErrorReason = pointer.StringPtr(message)
 }
 
 // setError sets the ErrorMessage field on the HardwareClassificationController

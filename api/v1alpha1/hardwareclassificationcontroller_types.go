@@ -26,38 +26,56 @@ import (
 type HardwareClassificationControllerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	// +x-kubernetes-unions: [{"discriminator":"type","fields":{"ExpectedHardwareConfiguration":"ExpectedHardwareConfiguration", "Rules":"Rules"}}]
+	Rules                         []Rules                       `json:"rules"`
+	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+	// +optional
+	ValidationError ValidationError `json:"validationError,omitempty"`
+}
 
-	// Namespace under which BareMetalHosts are present
-	Namespace                     string                          `json:"namespace"`
-	ExpectedHardwareConfiguration []ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+// Rules to define expression filter
+type Rules struct {
+	Feild    string `json:"feild"`
+	Operaion string `json:"operation"`
+	Value    int    `json:"value"`
+}
+
+// ValidationError to set error while validating rules
+type ValidationError struct {
+	ErrorReason *string `json:"errorReason,omitempty"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
 type ExpectedHardwareConfiguration struct {
-	ProfileName string      `json:"profileName"`
-	MinimumCPU  MinimumCPU  `json:"minimumCPU"`
-	MinimumDisk MinimumDisk `json:"minimumDisk"`
-	MinimumNICS MinimumNICS `json:"minimumNICS"`
-	MinimumRAM  int         `json:"minimumRAM"`
+	CustomFilter string `json:"customFilter"`
+	Namespace    string `json:"namespace"`
+	// +optional
+	CPU CPU `json:"CPU"`
+	// +optional
+	Disk Disk `json:"Disk"`
+	// +optional
+	NICS NICS `json:"NICS"`
+	// +optional
+	RAM int `json:"RAM"`
 	// +optional
 	SystemVendor SystemVendor `json:"systemVendor"`
 	// +optional
 	Firmware Firmware `json:"firmware"`
 }
 
-// Minimum cpu count
-type MinimumCPU struct {
+// cpu count
+type CPU struct {
 	Count int `json:"count"`
 }
 
-// MinimumDisk size and number of disks
-type MinimumDisk struct {
+// Disk size and number of disks
+type Disk struct {
 	SizeBytesGB   int64 `json:"sizeBytesGB"`
 	NumberOfDisks int   `json:"numberOfDisks"`
 }
 
-// MinimumNICS count of nics cards
-type MinimumNICS struct {
+// NICS count of nics cards
+type NICS struct {
 	NumberOfNICS int `json:"numberOfNICS"`
 }
 
@@ -96,7 +114,6 @@ type HardwareClassificationControllerStatus struct {
 }
 
 // +kubebuilder:object:root=true
-
 // HardwareClassificationController is the Schema for the hardwareclassificationcontrollers API
 type HardwareClassificationController struct {
 	metav1.TypeMeta   `json:",inline"`
