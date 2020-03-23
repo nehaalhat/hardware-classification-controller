@@ -17,14 +17,17 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/go-logr/logr"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/utils/pointer"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -57,47 +60,62 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
 
+	ironic_data := fetchHosts()
 	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
-	bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", bmhHostList)
+	// bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
+	// if err != nil {
+	// 	return ctrl.Result{}, err
+	// }
+	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	return ctrl.Result{}, nil
 }
 
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, error) {
-
-	bmhHostList := bmh.BareMetalHostList{}
-	validHostList := []bmh.BareMetalHost{}
-	hardwareClassification := &hwcc.HardwareClassificationController{}
-
-	opts := &client.ListOptions{
-		Namespace: namespace,
-	}
-
-	// Get list of BareMetalHost
-	err := r.Client.List(ctx, &bmhHostList, opts)
+// fetchHosts Retrive the host information
+func fetchHosts() hwcc.Data {
+	jsonFile, err := os.Open("introspectedData.json")
 	if err != nil {
-		setError(hardwareClassification, "Failed to get BareMetalHost List")
-		return validHostList, err
+		fmt.Println(err)
 	}
 
-	// Get hosts in ready and inspecting status from bmhHostList
-	for _, host := range bmhHostList.Items {
-		if host.Status.Provisioning.State == "ready" || host.Status.Provisioning.State == "inspecting" {
-			validHostList = append(validHostList, host)
-		}
-	}
+	jsonString, _ := ioutil.ReadAll(jsonFile)
 
-	return validHostList, nil
+	ironicData := hwcc.Data{}
+	json.Unmarshal([]byte(jsonString), &ironicData)
+	return ironicData
 }
+
+// func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, error) {
+
+// 	bmhHostList := bmh.BareMetalHostList{}
+// 	validHostList := []bmh.BareMetalHost{}
+// 	hardwareClassification := &hwcc.HardwareClassificationController{}
+
+// 	opts := &client.ListOptions{
+// 		Namespace: namespace,
+// 	}
+
+// 	// Get list of BareMetalHost
+// 	err := r.Client.List(ctx, &bmhHostList, opts)
+// 	if err != nil {
+// 		setError(hardwareClassification, "Failed to get BareMetalHost List")
+// 		return validHostList, err
+// 	}
+
+// 	// Get hosts in ready and inspecting status from bmhHostList
+// 	for _, host := range bmhHostList.Items {
+// 		if host.Status.Provisioning.State == "ready" || host.Status.Provisioning.State == "inspecting" {
+// 			validHostList = append(validHostList, host)
+// 		}
+// 	}
+
+// 	return validHostList, nil
+//}
 
 // setError sets the ErrorMessage field on the HardwareClassificationController
-func setError(hwcc *hwcc.HardwareClassificationController, message string) {
-	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
-}
+// func setError(hwcc *hwcc.HardwareClassificationController, message string) {
+// 	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
+// }
 
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
