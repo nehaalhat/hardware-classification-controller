@@ -58,8 +58,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	}
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
-	extractedProfileList := hardwareClassification.Spec.ExpectedHardwareConfiguration
-	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfileList", extractedProfileList)
+	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
+	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfile", extractedProfile)
 
 	ironic_data := fetchHosts()
 	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
