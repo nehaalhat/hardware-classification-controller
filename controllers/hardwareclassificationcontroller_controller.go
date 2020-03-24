@@ -27,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
+	ironic "hardware-classification-controller/ironic"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -71,16 +72,16 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	return ctrl.Result{}, nil
 }
 
-// fetchHosts Retrive the host information
-func fetchHosts() hwcc.Data {
-	jsonFile, err := os.Open("introspectedData.json")
+// fetchHosts Retrive the introspection data
+func fetchHosts() ironic.Data {
+	jsonFile, err := os.Open("introspectionData.json")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	jsonString, _ := ioutil.ReadAll(jsonFile)
 
-	ironicData := hwcc.Data{}
+	ironicData := ironic.Data{}
 	json.Unmarshal([]byte(jsonString), &ironicData)
 	return ironicData
 }
