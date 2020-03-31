@@ -72,10 +72,11 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// }
 	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
-	myMap := make(map[string]interface{})
-	myHWMap := make(map[string]interface{})
+	myMap := make(map[string]map[string]interface{})
 
 	for _, host := range ironic_data.Host {
+		myHWMap := make(map[string]interface{})
+
 		if extractedProfile.CPU != (hwcc.CPU{}) {
 			myHWMap["CPU"] = host.Status.HardwareDetails.CPU
 		}
@@ -102,8 +103,16 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 		myMap[host.Metadata.Name] = myHWMap
 	}
-	fmt.Println("My Map**********************", myMap)
+	//fmt.Println("My Map**********************", myMap)
 
+	for key, value := range myMap {
+		fmt.Println("Key*******", key)
+		for k, v := range value {
+			fmt.Println("key*******", k)
+			fmt.Println("Values*******", v)
+		}
+
+	}
 	return ctrl.Result{}, nil
 }
 
