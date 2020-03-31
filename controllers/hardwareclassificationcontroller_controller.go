@@ -24,10 +24,10 @@ import (
 
 	"github.com/go-logr/logr"
 
-	"k8s.io/apimachinery/pkg/runtime"
-
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
+	validate "hardware-classification-controller/validate"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -67,7 +67,9 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// if err != nil {
 	// 	return ctrl.Result{}, err
 	// }
-	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
+	r.Log.Info("Ashu : calling validation function")
+	validate.Validation(ironic_data)
+	//r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	return ctrl.Result{}, nil
 }
