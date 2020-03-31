@@ -41,9 +41,6 @@ type HardwareClassificationControllerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//type for map
-type M map[string]interface{}
-
 // Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
@@ -75,47 +72,37 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// }
 	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
-	var mySlice []M
-	//var myValues []interface{}
 	myMap := make(map[string]interface{})
 	myHWMap := make(map[string]interface{})
 
 	for _, host := range ironic_data.Host {
-		fmt.Println("hi********************")
 		if extractedProfile.CPU != (hwcc.CPU{}) {
 			myHWMap["CPU"] = host.Status.HardwareDetails.CPU
-			//myValues = append(myValues, host.Status.HardwareDetails.CPU)
 		}
 
 		if extractedProfile.Disk != (hwcc.Disk{}) {
 			myHWMap["Disk"] = host.Status.HardwareDetails.Storage
-			//myValues = append(myValues, host.Status.HardwareDetails.Storage)
 		}
 
 		if extractedProfile.NICS != (hwcc.NICS{}) {
 			myHWMap["NICS"] = host.Status.HardwareDetails.NIC
-			//myValues = append(myValues, host.Status.HardwareDetails.NIC)
 		}
 
 		if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
 			myHWMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
-			//myValues = append(myValues, host.Status.HardwareDetails.SystemVendor)
 		}
 
 		if extractedProfile.Firmware != (hwcc.Firmware{}) {
 			myHWMap["Firmware"] = host.Status.HardwareDetails.Firmware
-			//myValues = append(myValues, host.Status.HardwareDetails.Firmware)
 		}
 
 		if extractedProfile.RAM > 0 {
 			myHWMap["RAM"] = host.Status.HardwareDetails.RAMMebibytes
-			//myValues = append(myValues, host.Status.HardwareDetails.RAMMebibytes)
 		}
 
 		myMap[host.Metadata.Name] = myHWMap
 	}
-	mySlice = append(mySlice, myMap)
-	fmt.Println("My Slice**********************", mySlice)
+	fmt.Println("My Map**********************", myMap)
 
 	return ctrl.Result{}, nil
 }
