@@ -24,7 +24,15 @@ type HardwareClassificationControllerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 	// +x-kubernetes-unions: [{"discriminator":"type","fields":{"ExpectedHardwareConfiguration":"ExpectedHardwareConfiguration", "Rules":"Rules"}}]
+	Rules                         []Rules                       `json:"rules"`
 	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+}
+
+// Rules to define expression filter
+type Rules struct {
+	Feild    string `json:"feild"`
+	Operaion string `json:"operation"`
+	Value    int    `json:"value"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
@@ -37,6 +45,7 @@ type ExpectedHardwareConfiguration struct {
 	Disk Disk `json:"Disk"`
 	// +optional
 	NICS NICS `json:"NICS"`
+
 	// +optional
 	RAM int `json:"RAM"`
 	// +optional

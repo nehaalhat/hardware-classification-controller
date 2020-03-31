@@ -37,8 +37,8 @@ spec:
             of HardwareClassificationController
           properties:
             expectedValidationConfiguration:
-              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                Important: Run "make" to regenerate code after modifying this file'
+              description: ExpectedHardwareConfiguration details to match with the
+                host
               properties:
                 CPU:
                   description: cpu count
@@ -104,8 +104,27 @@ spec:
               - customFilter
               - namespace
               type: object
+            rules:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              items:
+                description: Rules to define expression filter
+                properties:
+                  feild:
+                    type: string
+                  operation:
+                    type: string
+                  value:
+                    type: integer
+                required:
+                - feild
+                - operation
+                - value
+                type: object
+              type: array
           required:
           - expectedValidationConfiguration
+          - rules
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed

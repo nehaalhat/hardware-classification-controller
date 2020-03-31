@@ -7,7 +7,13 @@ type Data struct {
 
 // Host Spec of the host
 type Host struct {
-	Status Status `json:"Status"`
+	Metadata Metadata `json:"Metadata"`
+	Status   Status   `json:"Status"`
+}
+
+//Metadata for Host
+type Metadata struct {
+	Name string `json:"name"`
 }
 
 // Status hardware details for the spec

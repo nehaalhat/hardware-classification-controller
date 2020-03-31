@@ -41,10 +41,12 @@ type HardwareClassificationControllerReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+//type for map
+type M map[string]interface{}
+
 // Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
-
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
@@ -61,6 +63,10 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfile", extractedProfile)
 
+	// Get expression rules from hardwareClassification
+	expressionRules := hardwareClassification.Spec.Rules
+	r.Log.Info("Extracted expression rules successfully", "expressionRules", expressionRules)
+
 	ironic_data := fetchHosts()
 	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
 	// bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
@@ -68,6 +74,41 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// 	return ctrl.Result{}, err
 	// }
 	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
+
+	var mySlice []M
+	var myValues []interface{}
+	myMap := make(map[string]interface{})
+
+	for _, host := range ironic_data.Host {
+		fmt.Println("hi********************")
+		if extractedProfile.CPU != (hwcc.CPU{}) {
+			myValues = append(myValues, host.Status.HardwareDetails.CPU)
+		}
+
+		if extractedProfile.Disk != (hwcc.Disk{}) {
+			myValues = append(myValues, host.Status.HardwareDetails.Storage)
+		}
+
+		if extractedProfile.NICS != (hwcc.NICS{}) {
+			myValues = append(myValues, host.Status.HardwareDetails.NIC)
+		}
+
+		if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
+			myValues = append(myValues, host.Status.HardwareDetails.SystemVendor)
+		}
+
+		if extractedProfile.Firmware != (hwcc.Firmware{}) {
+			myValues = append(myValues, host.Status.HardwareDetails.Firmware)
+		}
+
+		if extractedProfile.RAM > 0 {
+			myValues = append(myValues, host.Status.HardwareDetails.RAMMebibytes)
+		}
+
+		myMap[host.Metadata.Name] = myValues
+	}
+	mySlice = append(mySlice, myMap)
+	fmt.Println("My Slice**********************", mySlice)
 
 	return ctrl.Result{}, nil
 }

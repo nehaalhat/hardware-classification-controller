@@ -11,11 +11,7 @@ spec:
       Disk:
             sizeBytesGB: 25
             numberOfDisks: 2
-      NICS:
-            numberOfNICS: 4
-            RAM: 4
-      systemVendor:
-            name: Dell Inc.
-      firmware:
-            version:
-                  RAID: "25.5.3.0005"
+  rules:
+  - feild: CPU
+    operation: Equals
+    value: 5
