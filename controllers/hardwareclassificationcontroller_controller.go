@@ -76,36 +76,43 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	var mySlice []M
-	var myValues []interface{}
+	//var myValues []interface{}
 	myMap := make(map[string]interface{})
+	myHWMap := make(map[string]interface{})
 
 	for _, host := range ironic_data.Host {
 		fmt.Println("hi********************")
 		if extractedProfile.CPU != (hwcc.CPU{}) {
-			myValues = append(myValues, host.Status.HardwareDetails.CPU)
+			myHWMap["CPU"] = host.Status.HardwareDetails.CPU
+			//myValues = append(myValues, host.Status.HardwareDetails.CPU)
 		}
 
 		if extractedProfile.Disk != (hwcc.Disk{}) {
-			myValues = append(myValues, host.Status.HardwareDetails.Storage)
+			myHWMap["Disk"] = host.Status.HardwareDetails.Storage
+			//myValues = append(myValues, host.Status.HardwareDetails.Storage)
 		}
 
 		if extractedProfile.NICS != (hwcc.NICS{}) {
-			myValues = append(myValues, host.Status.HardwareDetails.NIC)
+			myHWMap["NICS"] = host.Status.HardwareDetails.NIC
+			//myValues = append(myValues, host.Status.HardwareDetails.NIC)
 		}
 
 		if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
-			myValues = append(myValues, host.Status.HardwareDetails.SystemVendor)
+			myHWMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
+			//myValues = append(myValues, host.Status.HardwareDetails.SystemVendor)
 		}
 
 		if extractedProfile.Firmware != (hwcc.Firmware{}) {
-			myValues = append(myValues, host.Status.HardwareDetails.Firmware)
+			myHWMap["Firmware"] = host.Status.HardwareDetails.Firmware
+			//myValues = append(myValues, host.Status.HardwareDetails.Firmware)
 		}
 
 		if extractedProfile.RAM > 0 {
-			myValues = append(myValues, host.Status.HardwareDetails.RAMMebibytes)
+			myHWMap["RAM"] = host.Status.HardwareDetails.RAMMebibytes
+			//myValues = append(myValues, host.Status.HardwareDetails.RAMMebibytes)
 		}
 
-		myMap[host.Metadata.Name] = myValues
+		myMap[host.Metadata.Name] = myHWMap
 	}
 	mySlice = append(mySlice, myMap)
 	fmt.Println("My Slice**********************", mySlice)
