@@ -28,7 +28,7 @@ import (
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
-
+	validate "hardware-classification-controller/validate"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -70,7 +70,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// if err != nil {
 	// 	return ctrl.Result{}, err
 	// }
-	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
+	//	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	myMap := make(map[string]map[string]interface{})
 
@@ -104,15 +104,17 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		myMap[host.Metadata.Name] = myHWMap
 	}
 	//fmt.Println("My Map**********************", myMap)
+	/*
+		for key, value := range myMap {
+			fmt.Println("Key*******", key)
+			for k, v := range value {
+				fmt.Println("key*******", k)
+				fmt.Println("Values*******", v)
+			}
 
-	for key, value := range myMap {
-		fmt.Println("Key*******", key)
-		for k, v := range value {
-			fmt.Println("key*******", k)
-			fmt.Println("Values*******", v)
-		}
-
-	}
+		}*/
+	r.Log.Info("Ashu : calling validation function")
+	validate.Validation(myMap)
 	return ctrl.Result{}, nil
 }
 
