@@ -73,6 +73,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	//	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	myMap := make(map[string]map[string]interface{})
+	validatedMap := make(map[string]map[string]interface{})
 
 	for _, host := range ironic_data.Host {
 		myHWMap := make(map[string]interface{})
@@ -82,7 +83,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		}
 
 		if extractedProfile.Disk != (hwcc.Disk{}) {
-			myHWMap["Disk"] = host.Status.HardwareDetails.Storage
+			myHWMap["Storage"] = host.Status.HardwareDetails.Storage
 		}
 
 		if extractedProfile.NICS != (hwcc.NICS{}) {
@@ -98,23 +99,24 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		}
 
 		if extractedProfile.RAM > 0 {
-			myHWMap["RAM"] = host.Status.HardwareDetails.RAMMebibytes
+			myHWMap["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
 		}
 
 		myMap[host.Metadata.Name] = myHWMap
 	}
-	//fmt.Println("My Map**********************", myMap)
 	/*
-		for key, value := range myMap {
-			fmt.Println("Key*******", key)
-			for k, v := range value {
-				fmt.Println("key*******", k)
-				fmt.Println("Values*******", v)
-			}
+		fmt.Println("My Map**********************", myMap)
+			for key, value := range myMap {
+				fmt.Println("Key*******", key)
+				for k, v := range value {
+					fmt.Println("key*******", k)
+					fmt.Println("Values*******", v)
+				}
 
-		}*/
+			}*/
 	r.Log.Info("Ashu : calling validation function")
-	validate.Validation(myMap)
+	validatedMap = validate.Validation(myMap)
+	r.Log.Info("Ashu : Validated Map", validatedMap)
 	return ctrl.Result{}, nil
 }
 
