@@ -73,7 +73,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	//	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	myMap := make(map[string]map[string]interface{})
-	validatedMap := make(map[string]map[string]interface{})
+	//validatedMap := make(map[string]map[string]interface{})
 
 	for _, host := range ironic_data.Host {
 		myHWMap := make(map[string]interface{})
@@ -115,8 +115,9 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 			}*/
 	r.Log.Info("Ashu : calling validation function")
-	validatedMap = validate.Validation(myMap)
-	r.Log.Info("Ashu : Validated Map", validatedMap)
+	//validatedMap = validate.Validation(myMap)
+	validate.Validation(myMap)
+	//r.Log.Info("Ashu : Validated Map", validatedMap)
 	return ctrl.Result{}, nil
 }
 

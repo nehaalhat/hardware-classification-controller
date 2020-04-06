@@ -3,10 +3,9 @@ kind: HardwareClassificationController
 metadata:
   name: hardwareclassificationcontroller-sample
 spec:
-  namespace: metal3
   expectedValidationConfiguration:
         customFilter: minimum
-        namepace: metal3
+        namespace: metal3
         CPU:
             count: 4
         Disk:
@@ -14,7 +13,6 @@ spec:
             numberOfDisks: 2
         NICS:
             numberOfNICS: 4
-
         RAM: 8
         systemVendor:
             name: Dell Inc.
@@ -22,6 +20,6 @@ spec:
             version:
                 BIOS: 2.2.10
   rules:
-  - field: CPU
+  - feild: CPU
     operation: Equals
     value: 5
