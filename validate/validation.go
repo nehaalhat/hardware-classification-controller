@@ -37,6 +37,7 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				validCPU := valdata.CPU{
 					Count: cpu.Count,
 				}
+				fmt.Println("Converted CPU Details **************", validCPU)
 				hardwareDetails[key] = validCPU
 			}
 
@@ -47,6 +48,7 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				validRAM := valdata.RAM{
 					RAMGb: ram,
 				}
+				fmt.Println("Converted RAM Details **************", validRAM)
 				hardwareDetails[key] = validRAM
 			}
 
@@ -63,13 +65,14 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				}
 
 				validNICS.Count = len(nics)
+				fmt.Println("Converted NICS Details **************", validNICS)
 				hardwareDetails[key] = validNICS
 			}
 
 			// Get the Storage details from the ironic host and validate it into new structure
 			storage, ok := value.([]ironic.Storage)
 			if ok {
-				fmt.Println("Storage Details *************", cpu)
+				fmt.Println("Storage Details *************", storage)
 				var sizeGB int64
 				for _, disk := range storage {
 					sizeGB += ConvertBytesToGb(int64(disk.SizeBytes))
@@ -77,6 +80,8 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				validStorage := valdata.Storage{
 					SizeGb: sizeGB,
 				}
+
+				fmt.Println("Converted Storage Details **************", validStorage)
 				hardwareDetails[key] = validStorage
 			}
 
