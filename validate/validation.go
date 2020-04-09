@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"fmt"
 	valdata "hardware-classification-controller/validate/validated_data"
 	"net"
 
@@ -25,38 +24,30 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 	validatedHostMap := make(map[string]map[string]interface{})
 
 	for hostName, details := range hostDetails {
-		fmt.Println("Inside Validation Function ", hostName)
 		hardwareDetails := make(map[string]interface{})
 		for key, value := range details {
 
 			// Get the CPU details from the ironic host and validate it into new structure
 			cpu, ok := value.(ironic.CPU)
 			if ok {
-				fmt.Println("CPU Details *************", cpu)
 				validCPU := valdata.CPU{
 					Count: cpu.Count,
 				}
-				fmt.Println("Key is", key)
-				fmt.Println("Converted CPU Details **************", validCPU)
 				hardwareDetails[key] = validCPU
 			}
 
 			// Get the RAM details from the ironic host and validate it into new structure
-			ram, ok := value.(int)
+			ram, ok := value.(int64)
 			if ok {
-				fmt.Println("RAM Details *************", ram)
 				validRAM := valdata.RAM{
-					RAMGb: ram,
+					RAMGb: int(ConvertBytesToGb(ram)),
 				}
-				fmt.Println("Key is", key)
-				fmt.Println("Converted RAM Details **************", validRAM)
 				hardwareDetails[key] = validRAM
 			}
 
 			// Get the NICS details from the ironic host and validate it into new structure
 			nics, ok := value.([]ironic.NIC)
 			if ok {
-				fmt.Println("NIC Details *************", nics)
 				var validNICS valdata.NIC
 				for _, NIC := range nics {
 					if NIC.PXE && CheckValidIP(NIC.IP) {
@@ -66,15 +57,12 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				}
 
 				validNICS.Count = len(nics)
-				fmt.Println("Key is", key)
-				fmt.Println("Converted NICS Details **************", validNICS)
 				hardwareDetails[key] = validNICS
 			}
 
 			// Get the Storage details from the ironic host and validate it into new structure
 			storage, ok := value.([]ironic.Storage)
 			if ok {
-				fmt.Println("Storage Details *************", storage)
 				var sizeGB int64
 				for _, disk := range storage {
 					sizeGB += ConvertBytesToGb(int64(disk.SizeBytes))
@@ -83,19 +71,15 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 					SizeGb: sizeGB,
 				}
 
-				fmt.Println("Key is", key)
-				fmt.Println("Converted Storage Details **************", validStorage)
 				hardwareDetails[key] = validStorage
 			}
 
 		}
 
-		fmt.Println("HardwareDetails in validation***********", hardwareDetails)
 		validatedHostMap[hostName] = hardwareDetails
 
 	}
 
-	fmt.Println("Map after validation in validation***********", validatedHostMap)
 	return validatedHostMap
 
 }

@@ -102,6 +102,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 		if extractedProfile.RAM > 0 {
 			myHWMap["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
+			fmt.Println("Ram in Controller ", host.Status.HardwareDetails.RAMMebibytes)
 		}
 
 		myMap[host.Metadata.Name] = myHWMap

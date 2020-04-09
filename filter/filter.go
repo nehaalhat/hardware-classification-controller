@@ -41,7 +41,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			storage, ok := value.(valdata.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if storage.SizeGb <= expectedHardwareprofile.Disk.SizeBytesGB {
+				if storage.SizeGb <= (expectedHardwareprofile.Disk.SizeBytesGB * int64(expectedHardwareprofile.Disk.NumberOfDisks)) {
 					isHostValid = true
 				}
 			}
@@ -49,6 +49,8 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 		if isHostValid {
 			fmt.Println(hostname, " Is a Valid Host")
+		} else {
+			fmt.Println(hostname, " Is NOT a Valid Host")
 		}
 
 	}
@@ -97,6 +99,8 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 		if isHostValid {
 			fmt.Println(hostname, " Is a Valid Host")
+		} else {
+			fmt.Println(hostname, " Is NOT a Valid Host")
 		}
 
 	}

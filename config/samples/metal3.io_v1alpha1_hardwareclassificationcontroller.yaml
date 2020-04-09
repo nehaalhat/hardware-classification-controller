@@ -7,12 +7,12 @@ spec:
         customFilter: minimum
         namespace: metal3
         CPU:
-            count: 4
+            count: 50
         Disk:
-            sizeBytesGB: 25
-            numberOfDisks: 2
+            sizeBytesGB: 500
+            numberOfDisks: 10
         NICS:
-            numberOfNICS: 4
+            numberOfNICS: 13
         RAM: 8
         systemVendor:
             name: Dell Inc.
