@@ -66,34 +66,36 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		fmt.Println("Hostname*************", hostname)
 		isHostValid := false
 
-		for field, value := range details {
-			fmt.Println("Field*************", field)
-			fmt.Println("value*************", value)
+		for _, value := range details {
 
 			cpu, ok := value.(valdata.CPU)
 			if ok {
-				if cpu.Count < expectedHardwareprofile.CPU.Count {
+				fmt.Println("CPU*************", cpu)
+				if cpu.Count > expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				}
 			}
 
 			ram, ok := value.(valdata.RAM)
 			if ok {
-				if ram.RAMGb < expectedHardwareprofile.RAM {
+				fmt.Println("RAM*************", ram)
+				if ram.RAMGb > expectedHardwareprofile.RAM {
 					isHostValid = true
 				}
 			}
 
 			nics, ok := value.(valdata.NIC)
 			if ok {
-				if nics.Count < expectedHardwareprofile.NICS.NumberOfNICS {
+				fmt.Println("NICS*************", nics)
+				if nics.Count > expectedHardwareprofile.NICS.NumberOfNICS {
 					isHostValid = true
 				}
 			}
 
 			storage, ok := value.(valdata.Storage)
 			if ok {
-				if storage.SizeGb < expectedHardwareprofile.Disk.SizeBytesGB {
+				fmt.Println("storage*************", storage)
+				if storage.SizeGb > expectedHardwareprofile.Disk.SizeBytesGB {
 					isHostValid = true
 				}
 			}
