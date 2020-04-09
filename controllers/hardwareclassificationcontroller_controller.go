@@ -109,7 +109,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	r.Log.Info("Ashu : calling validation function")
 	//validatedMap = validate.Validation(myMap)
-	validMap := validate.ValidationNew(myMap)
+	validMap := validate.Validation(myMap)
 	fmt.Println("Map after Validation")
 	fmt.Println(validMap)
 	manager.Manager(extractedProfile.CustomFilter, validMap, extractedProfile)

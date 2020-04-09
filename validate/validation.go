@@ -1,110 +1,161 @@
 package validate
 
 import (
-	"encoding/json"
 	"fmt"
 	valdata "hardware-classification-controller/validate/validated_data"
 	"net"
 
 	ironic "hardware-classification-controller/ironic"
-
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 )
 
-//ValidationNew this function will validate the host and create a new map with structered details
-func ValidationNew(hostDetails map[string]map[string]interface{}) map[string]map[string]interface{} {
+//CheckValidIP uses net package to check if the IP is valid or not
+func CheckValidIP(NICIp string) bool {
+	return net.ParseIP(NICIp) != nil
+}
+
+//ConvertBytesToGb it converts the Byte into GB
+func ConvertBytesToGb(inBytes int64) int64 {
+	inGb := (inBytes / 1024 / 1024 / 1024)
+	return inGb
+}
+
+//Validation this function will validate the host and create a new map with structered details
+func Validation(hostDetails map[string]map[string]interface{}) map[string]map[string]interface{} {
 
 	validatedHostMap := make(map[string]map[string]interface{})
 
 	for hostName, details := range hostDetails {
 		fmt.Println("Inside Validation Function ", hostName)
 
-		for _, value := range details {
+		for key, value := range details {
+			hardwareDetails := make(map[string]interface{})
+
+			// Get the CPU details from the ironic host and validate it into new structure
 			cpu, ok := value.(ironic.CPU)
 			if ok {
 				fmt.Println("CPU Details *************", cpu)
+				validCPU := valdata.CPU{
+					Count: cpu.Count,
+				}
+				hardwareDetails[key] = validCPU
 			}
+
+			// Get the RAM details from the ironic host and validate it into new structure
+			ram, ok := value.(int)
+			if ok {
+				fmt.Println("RAM Details *************", ram)
+				validRAM := valdata.RAM{
+					RAMGb: ram,
+				}
+				hardwareDetails[key] = validRAM
+			}
+
+			// Get the NICS details from the ironic host and validate it into new structure
+			nics, ok := value.([]ironic.NIC)
+			if ok {
+				fmt.Println("NIC Details *************", nics)
+				var validNICS valdata.NIC
+				for _, NIC := range nics {
+					if NIC.PXE && CheckValidIP(NIC.IP) {
+						validNICS.Name = NIC.Name
+						validNICS.PXE = NIC.PXE
+					}
+				}
+
+				validNICS.Count = len(nics)
+				hardwareDetails[key] = validNICS
+			}
+
+			// Get the Storage details from the ironic host and validate it into new structure
+			storage, ok := value.([]ironic.Storage)
+			if ok {
+				fmt.Println("Storage Details *************", cpu)
+				var sizeGB int64
+				for _, disk := range storage {
+					sizeGB += ConvertBytesToGb(int64(disk.SizeBytes))
+				}
+				validStorage := valdata.Storage{
+					SizeGb: sizeGB,
+				}
+				hardwareDetails[key] = validStorage
+			}
+
+			validatedHostMap[hostName] = hardwareDetails
+
 		}
+
 	}
 
 	return validatedHostMap
 
 }
 
-// Validation fucntion to validate the parameters
-func Validation(myMap map[string]map[string]interface{}) map[string]map[string]interface{} {
-	ValMap := make(map[string]map[string]interface{})
-	data := bmh.HardwareDetails{}
-	var validNICList []valdata.NIC
-	var validStorageList []valdata.Storage
-	var validCPU valdata.CPU
-	var RAM valdata.RAM
-	var validSystemVendor valdata.HardwareSystemVendor
-	for key, value := range myMap {
-		myHWMap := make(map[string]interface{})
-		jsonbody, err := json.Marshal(value)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = json.Unmarshal(jsonbody, &data)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for i := 0; i < len(data.NIC); i++ {
-			if data.NIC[i].PXE == true && CheckValidIP(data.NIC[i].IP) {
-				var validNIC valdata.NIC
-				validNIC.Name = data.NIC[i].Name
-				validNIC.PXE = data.NIC[i].PXE
-				validNICList = append(validNICList, validNIC)
-			} else {
-				continue
-			}
-		}
-		myHWMap["NICS"] = validNICList
-		for j := 0; j < len(data.Storage); j++ {
-			if data.Storage[j].SizeBytes != 0 {
-				var validStorage valdata.Storage
-				validStorage.Name = data.Storage[j].Name
-				validStorage.SizeGb = ConvertBytesToGb(int64(data.Storage[j].SizeBytes))
-				validStorageList = append(validStorageList, validStorage)
+// // Validation fucntion to validate the parameters
+// func Validation(myMap map[string]map[string]interface{}) map[string]map[string]interface{} {
+// 	ValMap := make(map[string]map[string]interface{})
+// 	data := bmh.HardwareDetails{}
+// 	var validNICList []valdata.NIC
+// 	var validStorageList []valdata.Storage
+// 	var validCPU valdata.CPU
+// 	var RAM valdata.RAM
+// 	var validSystemVendor valdata.HardwareSystemVendor
+// 	for key, value := range myMap {
+// 		myHWMap := make(map[string]interface{})
+// 		jsonbody, err := json.Marshal(value)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		err = json.Unmarshal(jsonbody, &data)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		for i := 0; i < len(data.NIC); i++ {
+// 			if data.NIC[i].PXE == true && CheckValidIP(data.NIC[i].IP) {
+// 				var validNIC valdata.NIC
+// 				validNIC.Name = data.NIC[i].Name
+// 				validNIC.PXE = data.NIC[i].PXE
+// 				validNICList = append(validNICList, validNIC)
+// 			} else {
+// 				continue
+// 			}
+// 		}
+// 		myHWMap["NICS"] = validNICList
 
-			} else {
-				continue
-			}
-		}
-		myHWMap["Storage"] = validStorageList
-		if data.CPU.Count > 0 {
-			validCPU.Count = data.CPU.Count
-		} else {
-			fmt.Println("Return error")
-		}
-		myHWMap["CPU"] = validCPU
-		if data.RAMMebibytes > 0 {
-			RAM.RAMGb = data.RAMMebibytes / 954
-			// Convert mebibyte into Gb
-		} else {
-			fmt.Println("No valid RAM")
-		}
-		myHWMap["RAM"] = RAM
-		if data.SystemVendor.Manufacturer == "Dell Inc." {
-			validSystemVendor.Manufacturer = data.SystemVendor.Manufacturer
-		}
-		myHWMap["SystemVendor"] = validSystemVendor
-		ValMap[key] = myHWMap
+// 		for j := 0; j < len(data.Storage); j++ {
+// 			if data.Storage[j].SizeBytes != 0 {
+// 				var validStorage valdata.Storage
+// 				validStorage.Name = data.Storage[j].Name
+// 				validStorage.SizeGb = ConvertBytesToGb(int64(data.Storage[j].SizeBytes))
+// 				validStorageList = append(validStorageList, validStorage)
 
-	}
-	return ValMap
+// 			} else {
+// 				continue
+// 			}
+// 		}
+// 		myHWMap["Storage"] = validStorageList
+// 		if data.CPU.Count > 0 {
+// 			validCPU.Count = data.CPU.Count
+// 		} else {
+// 			fmt.Println("Return error")
+// 		}
+// 		myHWMap["CPU"] = validCPU
+// 		if data.RAMMebibytes > 0 {
+// 			RAM.RAMGb = data.RAMMebibytes / 954
+// 			// Convert mebibyte into Gb
+// 		} else {
+// 			fmt.Println("No valid RAM")
+// 		}
+// 		myHWMap["RAM"] = RAM
+// 		if data.SystemVendor.Manufacturer == "Dell Inc." {
+// 			validSystemVendor.Manufacturer = data.SystemVendor.Manufacturer
+// 		}
+// 		myHWMap["SystemVendor"] = validSystemVendor
+// 		ValMap[key] = myHWMap
 
-}
+// 	}
+// 	return ValMap
 
-func CheckValidIP(NICIp string) bool {
-	return net.ParseIP(NICIp) != nil
-}
-
-func ConvertBytesToGb(inBytes int64) int64 {
-	inGb := (inBytes / 1024 / 1024 / 1024)
-	return inGb
-}
+// }
 
 /*//	fmt.Println("Ashu : Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 	for _, host := range ironic_data.Host {
