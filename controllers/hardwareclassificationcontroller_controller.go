@@ -28,6 +28,7 @@ import (
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
+	manager "hardware-classification-controller/manager"
 	validate "hardware-classification-controller/validate"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -120,6 +121,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	validMap := validate.Validation(myMap)
 	fmt.Println("Map after Validation")
 	fmt.Println(validMap)
+	manager.Manager(extractedProfile.CustomFilter, validMap, extractedProfile)
 	// r.Log.Info("Ashu : Validated Map", validMap)
 	return ctrl.Result{}, nil
 }
