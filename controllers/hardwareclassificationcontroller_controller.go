@@ -18,9 +18,11 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/go-logr/logr"
 
@@ -28,7 +30,6 @@ import (
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
-
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -64,55 +65,65 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	expressionRules := hardwareClassification.Spec.Rules
 	r.Log.Info("Extracted expression rules successfully", "expressionRules", expressionRules)
 
+	// Check oneOf customFilter and expression rules is passed
+	if extractedProfile.CustomFilter != "" && len(expressionRules) > 0 {
+		validationError := errors.New("oneOf customFilter and expression rules can be passed")
+		return ctrl.Result{}, validationError
+	}
+
 	ironic_data := fetchHosts()
-	// Get a list of BaremetalHost from Baremetal-Operator and metal3 namespace
-	// bmhHostList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.Namespace)
-	// if err != nil {
-	// 	return ctrl.Result{}, err
-	// }
+
 	r.Log.Info("Fetched Baremetal host list successfully", "BareMetalHostList", ironic_data)
 
 	myMap := make(map[string]map[string]interface{})
+	myHWMap := make(map[string]interface{})
 
-	for _, host := range ironic_data.Host {
-		myHWMap := make(map[string]interface{})
-
-		if extractedProfile.CPU != (hwcc.CPU{}) {
-			myHWMap["CPU"] = host.Status.HardwareDetails.CPU
+	if len(expressionRules) > 0 {
+		for _, rules := range expressionRules {
+			for _, host := range ironic_data.Host {
+				if strings.ToUpper(rules.Field) == "CPU" {
+					myHWMap["CPU"] = host.Status.HardwareDetails.CPU
+				} else if strings.ToUpper(rules.Field) == "STORAGE" || strings.ToUpper(rules.Field) == "DISK" || strings.ToUpper(rules.Field) == "NUMBEROFDISK" {
+					myHWMap["Storage"] = host.Status.HardwareDetails.Storage
+				} else if strings.ToUpper(rules.Field) == "RAM" {
+					myHWMap["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
+				} else if strings.ToUpper(rules.Field) == "NICS" || strings.ToUpper(rules.Field) == "NUMBEROFNICS" {
+					myHWMap["NICS"] = host.Status.HardwareDetails.NIC
+				} else if strings.ToUpper(rules.Field) == "SYSTEMVENDOR" {
+					myHWMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
+				} else if strings.ToUpper(rules.Field) == "FIRMWARE" {
+					myHWMap["Firmware"] = host.Status.HardwareDetails.NIC
+				}
+				myMap[host.Metadata.Name] = myHWMap
+			}
 		}
 
-		if extractedProfile.Disk != (hwcc.Disk{}) {
-			myHWMap["Disk"] = host.Status.HardwareDetails.Storage
-		}
-
-		if extractedProfile.NICS != (hwcc.NICS{}) {
-			myHWMap["NICS"] = host.Status.HardwareDetails.NIC
-		}
-
-		if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
-			myHWMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
-		}
-
-		if extractedProfile.Firmware != (hwcc.Firmware{}) {
-			myHWMap["Firmware"] = host.Status.HardwareDetails.Firmware
-		}
-
-		if extractedProfile.RAM > 0 {
-			myHWMap["RAM"] = host.Status.HardwareDetails.RAMMebibytes
-		}
-
-		myMap[host.Metadata.Name] = myHWMap
+		fmt.Println("My Map********", myMap)
 	}
-	//fmt.Println("My Map**********************", myMap)
 
-	for key, value := range myMap {
-		fmt.Println("Key*******", key)
-		for k, v := range value {
-			fmt.Println("key*******", k)
-			fmt.Println("Values*******", v)
+	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
+		for _, host := range ironic_data.Host {
+			//myHWMap := make(map[string]interface{})
+
+			if extractedProfile.CPU != (hwcc.CPU{}) {
+				myHWMap["CPU"] = host.Status.HardwareDetails.CPU
+			} else if extractedProfile.Disk != (hwcc.Disk{}) {
+				myHWMap["Disk"] = host.Status.HardwareDetails.Storage
+			} else if extractedProfile.NICS != (hwcc.NICS{}) {
+				myHWMap["NICS"] = host.Status.HardwareDetails.NIC
+			} else if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
+				myHWMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
+			} else if extractedProfile.Firmware != (hwcc.Firmware{}) {
+				myHWMap["Firmware"] = host.Status.HardwareDetails.Firmware
+			} else if extractedProfile.RAM > 0 {
+				myHWMap["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
+			}
+
+			myMap[host.Metadata.Name] = myHWMap
 		}
-
+		fmt.Println("My Map********", myMap)
 	}
+
 	return ctrl.Result{}, nil
 }
 
@@ -129,38 +140,6 @@ func fetchHosts() ironic.Data {
 	json.Unmarshal([]byte(jsonString), &ironicData)
 	return ironicData
 }
-
-// func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, error) {
-
-// 	bmhHostList := bmh.BareMetalHostList{}
-// 	validHostList := []bmh.BareMetalHost{}
-// 	hardwareClassification := &hwcc.HardwareClassificationController{}
-
-// 	opts := &client.ListOptions{
-// 		Namespace: namespace,
-// 	}
-
-// 	// Get list of BareMetalHost
-// 	err := r.Client.List(ctx, &bmhHostList, opts)
-// 	if err != nil {
-// 		setError(hardwareClassification, "Failed to get BareMetalHost List")
-// 		return validHostList, err
-// 	}
-
-// 	// Get hosts in ready and inspecting status from bmhHostList
-// 	for _, host := range bmhHostList.Items {
-// 		if host.Status.Provisioning.State == "ready" || host.Status.Provisioning.State == "inspecting" {
-// 			validHostList = append(validHostList, host)
-// 		}
-// 	}
-
-// 	return validHostList, nil
-//}
-
-// setError sets the ErrorMessage field on the HardwareClassificationController
-// func setError(hwcc *hwcc.HardwareClassificationController, message string) {
-// 	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
-// }
 
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).

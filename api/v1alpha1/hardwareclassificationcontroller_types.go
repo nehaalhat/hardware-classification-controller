@@ -23,20 +23,22 @@ import (
 type HardwareClassificationControllerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	// +x-kubernetes-unions: [{"discriminator":"type","fields":{"ExpectedHardwareConfiguration":"ExpectedHardwareConfiguration", "Rules":"Rules"}}]
-	Rules                         []Rules                       `json:"rules"`
+	// +optional
+	Rules []Rules `json:"rules"`
+	// +optional
 	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
 }
 
 // Rules to define expression filter
 type Rules struct {
-	Feild    string `json:"feild"`
+	Field    string `json:"field"`
 	Operaion string `json:"operation"`
-	Value    int    `json:"value"`
+	Value    string `json:"value"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
 type ExpectedHardwareConfiguration struct {
+	// +kubebuilder:validation:Enum:minimum;maximum
 	CustomFilter string `json:"customFilter"`
 	Namespace    string `json:"namespace"`
 	// +optional
@@ -61,13 +63,13 @@ type CPU struct {
 
 // Disk size and number of disks
 type Disk struct {
-	SizeBytesGB   int64 `json:"sizeBytesGB"`
-	NumberOfDisks int   `json:"numberOfDisks"`
+	SizeGB int64 `json:"sizeGB"`
+	Count  int   `json:"count"`
 }
 
 // NICS count of nics cards
 type NICS struct {
-	NumberOfNICS int `json:"numberOfNICS"`
+	Count int `json:"count"`
 }
 
 // SystemVendor details

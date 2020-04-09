@@ -51,22 +51,22 @@ spec:
                 Disk:
                   description: Disk size and number of disks
                   properties:
-                    numberOfDisks:
+                    count:
                       type: integer
-                    sizeBytesGB:
+                    sizeGB:
                       format: int64
                       type: integer
                   required:
-                  - numberOfDisks
-                  - sizeBytesGB
+                  - count
+                  - sizeGB
                   type: object
                 NICS:
                   description: NICS count of nics cards
                   properties:
-                    numberOfNICS:
+                    count:
                       type: integer
                   required:
-                  - numberOfNICS
+                  - count
                   type: object
                 RAM:
                   type: integer
@@ -110,21 +110,18 @@ spec:
               items:
                 description: Rules to define expression filter
                 properties:
-                  feild:
+                  field:
                     type: string
                   operation:
                     type: string
                   value:
-                    type: integer
+                    type: string
                 required:
-                - feild
+                - field
                 - operation
                 - value
                 type: object
               type: array
-          required:
-          - expectedValidationConfiguration
-          - rules
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed

@@ -4,14 +4,11 @@ metadata:
   name: hardwareclassificationcontroller-sample
 spec:
   expectedValidationConfiguration:
-      customFilter: minimum
+      customFilter: abc
       namespace: metal3
       CPU:
-            count: 4
+        count: 4
       Disk:
-            sizeBytesGB: 25
-            numberOfDisks: 2
-  rules:
-  - feild: CPU
-    operation: Equals
-    value: 5
+        sizeGB: 25
+        count: 2
+      ram: 20
