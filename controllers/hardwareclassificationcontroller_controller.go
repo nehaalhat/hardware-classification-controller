@@ -29,6 +29,7 @@ import (
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
 	validate "hardware-classification-controller/validate"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -116,8 +117,10 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 			}*/
 	r.Log.Info("Ashu : calling validation function")
 	//validatedMap = validate.Validation(myMap)
-	validate.Validation(myMap)
-	//r.Log.Info("Ashu : Validated Map", validatedMap)
+	validMap := validate.Validation(myMap)
+	fmt.Println("Map after Validation")
+	fmt.Println(validMap)
+	// r.Log.Info("Ashu : Validated Map", validMap)
 	return ctrl.Result{}, nil
 }
 
