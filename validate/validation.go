@@ -26,9 +26,8 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 
 	for hostName, details := range hostDetails {
 		fmt.Println("Inside Validation Function ", hostName)
-
+		hardwareDetails := make(map[string]interface{})
 		for key, value := range details {
-			hardwareDetails := make(map[string]interface{})
 
 			// Get the CPU details from the ironic host and validate it into new structure
 			cpu, ok := value.(ironic.CPU)
