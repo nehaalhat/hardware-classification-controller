@@ -88,10 +88,10 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				hardwareDetails[key] = validStorage
 			}
 
-			fmt.Println("HardwareDetails in validation***********", hardwareDetails)
-			validatedHostMap[hostName] = hardwareDetails
-
 		}
+
+		fmt.Println("HardwareDetails in validation***********", hardwareDetails)
+		validatedHostMap[hostName] = hardwareDetails
 
 	}
 
