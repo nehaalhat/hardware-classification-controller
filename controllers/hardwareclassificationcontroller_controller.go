@@ -106,19 +106,10 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 		myMap[host.Metadata.Name] = myHWMap
 	}
-	/*
-		fmt.Println("My Map**********************", myMap)
-			for key, value := range myMap {
-				fmt.Println("Key*******", key)
-				for k, v := range value {
-					fmt.Println("key*******", k)
-					fmt.Println("Values*******", v)
-				}
 
-			}*/
 	r.Log.Info("Ashu : calling validation function")
 	//validatedMap = validate.Validation(myMap)
-	validMap := validate.Validation(myMap)
+	validMap := validate.ValidationNew(myMap)
 	fmt.Println("Map after Validation")
 	fmt.Println(validMap)
 	manager.Manager(extractedProfile.CustomFilter, validMap, extractedProfile)

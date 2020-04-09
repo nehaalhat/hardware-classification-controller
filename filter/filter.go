@@ -8,11 +8,8 @@ import (
 
 //MinimumFieldComparison check for the minimum validation
 func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
-	// validHost := make(map[string]string)
-
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
-		fmt.Println("Hostname*************", hostname)
 		isHostValid := false
 
 		for _, value := range details {
@@ -20,7 +17,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			cpu, ok := value.(valdata.CPU)
 			if ok {
 				fmt.Println("CPU*************", cpu)
-				if cpu.Count > expectedHardwareprofile.CPU.Count {
+				if cpu.Count <= expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				}
 			}
@@ -28,7 +25,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			ram, ok := value.(valdata.RAM)
 			if ok {
 				fmt.Println("RAM*************", ram)
-				if ram.RAMGb > expectedHardwareprofile.RAM {
+				if ram.RAMGb <= expectedHardwareprofile.RAM {
 					isHostValid = true
 				}
 			}
@@ -36,7 +33,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			nics, ok := value.(valdata.NIC)
 			if ok {
 				fmt.Println("NICS*************", nics)
-				if nics.Count > expectedHardwareprofile.NICS.NumberOfNICS {
+				if nics.Count <= expectedHardwareprofile.NICS.NumberOfNICS {
 					isHostValid = true
 				}
 			}
@@ -44,7 +41,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			storage, ok := value.(valdata.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if storage.SizeGb > expectedHardwareprofile.Disk.SizeBytesGB {
+				if storage.SizeGb <= expectedHardwareprofile.Disk.SizeBytesGB {
 					isHostValid = true
 				}
 			}
@@ -57,13 +54,10 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 	}
 }
 
-//MaximumFieldComparison check for the minimum validation
+//MaximumFieldComparison check for the maximum validation
 func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
-	// validHost := make(map[string]string)
-
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
-		fmt.Println("Hostname*************", hostname)
 		isHostValid := false
 
 		for _, value := range details {
@@ -71,7 +65,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			cpu, ok := value.(valdata.CPU)
 			if ok {
 				fmt.Println("CPU*************", cpu)
-				if cpu.Count > expectedHardwareprofile.CPU.Count {
+				if cpu.Count >= expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				}
 			}
@@ -79,7 +73,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			ram, ok := value.(valdata.RAM)
 			if ok {
 				fmt.Println("RAM*************", ram)
-				if ram.RAMGb > expectedHardwareprofile.RAM {
+				if ram.RAMGb >= expectedHardwareprofile.RAM {
 					isHostValid = true
 				}
 			}
@@ -87,7 +81,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			nics, ok := value.(valdata.NIC)
 			if ok {
 				fmt.Println("NICS*************", nics)
-				if nics.Count > expectedHardwareprofile.NICS.NumberOfNICS {
+				if nics.Count >= expectedHardwareprofile.NICS.NumberOfNICS {
 					isHostValid = true
 				}
 			}
@@ -95,7 +89,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			storage, ok := value.(valdata.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if storage.SizeGb > expectedHardwareprofile.Disk.SizeBytesGB {
+				if storage.SizeGb >= expectedHardwareprofile.Disk.SizeBytesGB {
 					isHostValid = true
 				}
 			}

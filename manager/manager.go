@@ -9,9 +9,9 @@ import (
 func Manager(filter string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 
 	if filter == "maximum" {
-		filt.MinimumFieldComparison(validatedHost, expectedHardwareprofile)
-	} else {
 		filt.MaximumFieldComparison(validatedHost, expectedHardwareprofile)
+	} else {
+		filt.MinimumFieldComparison(validatedHost, expectedHardwareprofile)
 	}
 
 }

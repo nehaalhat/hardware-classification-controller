@@ -3,10 +3,31 @@ package validate
 import (
 	"encoding/json"
 	"fmt"
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	valdata "hardware-classification-controller/validate/validated_data"
 	"net"
+
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 )
+
+//ValidationNew this function will validate the host and create a new map with structered details
+func ValidationNew(hostDetails map[string]map[string]interface{}) map[string]map[string]interface{} {
+
+	validatedHostMap := make(map[string]map[string]interface{})
+
+	for hostName, details := range hostDetails {
+		fmt.Println("Inside Validation Function ", hostName)
+
+		for _, value := range details {
+			cpu, ok := value.(bmh.CPU)
+			if ok {
+				fmt.Println("CPU Details *************", cpu)
+			}
+		}
+	}
+
+	return validatedHostMap
+
+}
 
 // Validation fucntion to validate the parameters
 func Validation(myMap map[string]map[string]interface{}) map[string]map[string]interface{} {
