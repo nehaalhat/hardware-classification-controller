@@ -15,12 +15,11 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		fmt.Println("Hostname*************", hostname)
 		isHostValid := false
 
-		for field, value := range details {
-			fmt.Println("Field*************", field)
-			fmt.Println("value*************", value)
+		for _, value := range details {
 
 			cpu, ok := value.(valdata.CPU)
 			if ok {
+				fmt.Println("CPU*************", cpu)
 				if cpu.Count > expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				}
@@ -28,6 +27,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			ram, ok := value.(valdata.RAM)
 			if ok {
+				fmt.Println("RAM*************", ram)
 				if ram.RAMGb > expectedHardwareprofile.RAM {
 					isHostValid = true
 				}
@@ -35,6 +35,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			nics, ok := value.(valdata.NIC)
 			if ok {
+				fmt.Println("NICS*************", nics)
 				if nics.Count > expectedHardwareprofile.NICS.NumberOfNICS {
 					isHostValid = true
 				}
@@ -42,6 +43,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			storage, ok := value.(valdata.Storage)
 			if ok {
+				fmt.Println("storage*************", storage)
 				if storage.SizeGb > expectedHardwareprofile.Disk.SizeBytesGB {
 					isHostValid = true
 				}
