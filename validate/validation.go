@@ -6,6 +6,8 @@ import (
 	valdata "hardware-classification-controller/validate/validated_data"
 	"net"
 
+	ironic "hardware-classification-controller/ironic"
+
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 )
 
@@ -18,7 +20,7 @@ func ValidationNew(hostDetails map[string]map[string]interface{}) map[string]map
 		fmt.Println("Inside Validation Function ", hostName)
 
 		for _, value := range details {
-			cpu, ok := value.(bmh.CPU)
+			cpu, ok := value.(ironic.CPU)
 			if ok {
 				fmt.Println("CPU Details *************", cpu)
 			}
