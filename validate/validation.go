@@ -37,6 +37,7 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				validCPU := valdata.CPU{
 					Count: cpu.Count,
 				}
+				fmt.Println("Key is", key)
 				fmt.Println("Converted CPU Details **************", validCPU)
 				hardwareDetails[key] = validCPU
 			}
@@ -48,6 +49,7 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				validRAM := valdata.RAM{
 					RAMGb: ram,
 				}
+				fmt.Println("Key is", key)
 				fmt.Println("Converted RAM Details **************", validRAM)
 				hardwareDetails[key] = validRAM
 			}
@@ -65,6 +67,7 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				}
 
 				validNICS.Count = len(nics)
+				fmt.Println("Key is", key)
 				fmt.Println("Converted NICS Details **************", validNICS)
 				hardwareDetails[key] = validNICS
 			}
@@ -81,16 +84,19 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 					SizeGb: sizeGB,
 				}
 
+				fmt.Println("Key is", key)
 				fmt.Println("Converted Storage Details **************", validStorage)
 				hardwareDetails[key] = validStorage
 			}
 
+			fmt.Println("HardwareDetails in validation***********", hardwareDetails)
 			validatedHostMap[hostName] = hardwareDetails
 
 		}
 
 	}
 
+	fmt.Println("Map after validation in validation***********", validatedHostMap)
 	return validatedHostMap
 
 }
