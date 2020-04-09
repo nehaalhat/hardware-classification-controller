@@ -108,21 +108,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		myMap[host.Metadata.Name] = myHWMap
 	}
 
-	for _, details := range myMap {
-		for key, value := range details {
-
-			if key == "RAMMebibytes" {
-				fmt.Println("Ram is ", value)
-			}
-
-		}
-	}
-	fmt.Println("map from the controller", myMap)
-
-	r.Log.Info("Ashu : calling validation function")
-	//validatedMap = validate.Validation(myMap)
 	validMap := validate.Validation(myMap)
-	fmt.Println("Map after Validation")
 	fmt.Println(validMap)
 	manager.Manager(extractedProfile.CustomFilter, validMap, extractedProfile)
 	// r.Log.Info("Ashu : Validated Map", validMap)
