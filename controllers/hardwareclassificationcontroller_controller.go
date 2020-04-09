@@ -108,12 +108,14 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		myMap[host.Metadata.Name] = myHWMap
 	}
 
-	for key, value := range myMap {
+	for _, details := range myMap {
+		for key, value := range details {
 
-		if key == "RAMMebibytes" {
-			fmt.Println("Ram is ", value)
+			if key == "RAMMebibytes" {
+				fmt.Println("Ram is ", value)
+			}
+
 		}
-
 	}
 	fmt.Println("map from the controller", myMap)
 
