@@ -108,6 +108,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		myMap[host.Metadata.Name] = myHWMap
 	}
 
+	fmt.Println("map from the controller", myMap)
+
 	r.Log.Info("Ashu : calling validation function")
 	//validatedMap = validate.Validation(myMap)
 	validMap := validate.Validation(myMap)
