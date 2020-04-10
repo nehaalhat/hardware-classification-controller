@@ -27,6 +27,7 @@ import (
 	ironic "hardware-classification-controller/ironic"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
+	validate "hardware-classification-controller/validate"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -87,6 +88,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	fmt.Printf("Extracted Hardware Details %+v", extractedHardwareDetails)
 	fmt.Println("-----------------------------------------")
 
+	validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
+	fmt.Println(validatedHardwareDetails)
 	return ctrl.Result{}, nil
 }
 
