@@ -25,9 +25,11 @@ import (
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	ironic "hardware-classification-controller/ironic"
+	"hardware-classification-controller/manager"
+	"hardware-classification-controller/validate"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
-	validate "hardware-classification-controller/validate"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -90,6 +92,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
 	fmt.Println(validatedHardwareDetails)
+
+	manager.Manager(extractedProfile.CustomFilter, validatedHardwareDetails, extractedProfile)
 	return ctrl.Result{}, nil
 }
 

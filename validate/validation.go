@@ -1,9 +1,9 @@
 package validate
 
 import (
-	valTypes "hardware-classification-controller/validateModel"
-	"net"
 	ironic "hardware-classification-controller/ironic"
+	valTypes "hardware-classification-controller/validate/validateModel"
+	"net"
 )
 
 //CheckValidIP uses net package to check if the IP is valid or not
