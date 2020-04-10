@@ -37,82 +37,75 @@ spec:
             of HardwareClassificationController
           properties:
             expectedValidationConfiguration:
-              items:
-                description: ExpectedHardwareConfiguration details to match with the
-                  host
-                properties:
-                  firmware:
-                    description: Firmware details
-                    properties:
-                      version:
-                        description: Firmware Version details
-                        properties:
-                          BIOS:
-                            type: string
-                          BaseBandManagement:
-                            type: string
-                          IDRAC:
-                            type: string
-                          RAID:
-                            type: string
-                        type: object
-                    required:
-                    - version
-                    type: object
-                  minimumCPU:
-                    description: Minimum cpu count
-                    properties:
-                      count:
-                        type: integer
-                    required:
-                    - count
-                    type: object
-                  minimumDisk:
-                    description: MinimumDisk size and number of disks
-                    properties:
-                      numberOfDisks:
-                        type: integer
-                      sizeBytesGB:
-                        format: int64
-                        type: integer
-                    required:
-                    - numberOfDisks
-                    - sizeBytesGB
-                    type: object
-                  minimumNICS:
-                    description: MinimumNICS count of nics cards
-                    properties:
-                      numberOfNICS:
-                        type: integer
-                    required:
-                    - numberOfNICS
-                    type: object
-                  minimumRAM:
-                    type: integer
-                  profileName:
-                    type: string
-                  systemVendor:
-                    description: SystemVendor details
-                    properties:
-                      name:
-                        type: string
-                    required:
-                    - name
-                    type: object
-                required:
-                - minimumCPU
-                - minimumDisk
-                - minimumNICS
-                - minimumRAM
-                - profileName
-                type: object
-              type: array
-            namespace:
-              description: Namespace under which BareMetalHosts are present
-              type: string
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              properties:
+                CPU:
+                  description: cpu count
+                  properties:
+                    count:
+                      type: integer
+                  required:
+                  - count
+                  type: object
+                Disk:
+                  description: Disk size and number of disks
+                  properties:
+                    count:
+                      type: integer
+                    sizeGB:
+                      format: int64
+                      type: integer
+                  required:
+                  - count
+                  - sizeGB
+                  type: object
+                NICS:
+                  description: NICS count of nics cards
+                  properties:
+                    count:
+                      type: integer
+                  required:
+                  - count
+                  type: object
+                RAM:
+                  type: integer
+                customFilter:
+                  type: string
+                firmware:
+                  description: Firmware details
+                  properties:
+                    version:
+                      description: Firmware Version details
+                      properties:
+                        BIOS:
+                          type: string
+                        BaseBandManagement:
+                          type: string
+                        IDRAC:
+                          type: string
+                        RAID:
+                          type: string
+                      type: object
+                  required:
+                  - version
+                  type: object
+                namespace:
+                  type: string
+                systemVendor:
+                  description: SystemVendor details
+                  properties:
+                    name:
+                      type: string
+                  required:
+                  - name
+                  type: object
+              required:
+              - customFilter
+              - namespace
+              type: object
           required:
           - expectedValidationConfiguration
-          - namespace
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed
