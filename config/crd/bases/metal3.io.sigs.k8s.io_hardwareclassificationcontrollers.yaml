@@ -72,34 +72,8 @@ spec:
                   type: integer
                 customFilter:
                   type: string
-                firmware:
-                  description: Firmware details
-                  properties:
-                    version:
-                      description: Firmware Version details
-                      properties:
-                        BIOS:
-                          type: string
-                        BaseBandManagement:
-                          type: string
-                        IDRAC:
-                          type: string
-                        RAID:
-                          type: string
-                      type: object
-                  required:
-                  - version
-                  type: object
                 namespace:
                   type: string
-                systemVendor:
-                  description: SystemVendor details
-                  properties:
-                    name:
-                      type: string
-                  required:
-                  - name
-                  type: object
               required:
               - customFilter
               - namespace

@@ -38,10 +38,6 @@ type ExpectedHardwareConfiguration struct {
 	NICS NICS `json:"NICS"`
 	// +optional
 	RAM int `json:"RAM"`
-	// +optional
-	SystemVendor SystemVendor `json:"systemVendor"`
-	// +optional
-	Firmware Firmware `json:"firmware"`
 }
 
 // cpu count
@@ -58,28 +54,6 @@ type Disk struct {
 // NICS count of nics cards
 type NICS struct {
 	Count int `json:"count"`
-}
-
-// SystemVendor details
-type SystemVendor struct {
-	Name string `json:"name"`
-}
-
-// Firmware details
-type Firmware struct {
-	Version Version `json:"version"`
-}
-
-// Firmware Version details
-type Version struct {
-	// +optional
-	RAID string `json:"RAID"`
-	// +optional
-	BasebandManagement string `json:"BaseBandManagement"`
-	// +optional
-	BIOS string `json:"BIOS"`
-	// +optional
-	IDRAC string `json:"IDRAC"`
 }
 
 // HardwareClassificationControllerStatus defines the observed state of HardwareClassificationController

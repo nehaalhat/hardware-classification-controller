@@ -54,40 +54,38 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
-	r.Log.Info("Extracted expected hardware configuration successfully", "extractedProfile", extractedProfile)
+	fmt.Println("-----------------------------------------")
+	fmt.Printf("Extracted expected hardware configuration successfully %+v", extractedProfile)
+	fmt.Println("-----------------------------------------")
 
 	ironic_data := fetchHosts()
 
-	validateMap := make(map[string]map[string]interface{})
+	extractedHardwareDetails := make(map[string]map[string]interface{})
 
 	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
 		for _, host := range ironic_data.Host {
-			hardwareDetailsMap := make(map[string]interface{})
+			introspectionDetails := make(map[string]interface{})
 
 			if extractedProfile.CPU != (hwcc.CPU{}) {
-				hardwareDetailsMap["CPU"] = host.Status.HardwareDetails.CPU
+				introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 			}
 			if extractedProfile.Disk != (hwcc.Disk{}) {
-				hardwareDetailsMap["Disk"] = host.Status.HardwareDetails.Storage
+				introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
 			}
 			if extractedProfile.NICS != (hwcc.NICS{}) {
-				hardwareDetailsMap["NICS"] = host.Status.HardwareDetails.NIC
-			}
-			if extractedProfile.SystemVendor != (hwcc.SystemVendor{}) {
-				hardwareDetailsMap["SystemVendor"] = host.Status.HardwareDetails.SystemVendor
-			}
-			if extractedProfile.Firmware != (hwcc.Firmware{}) {
-				hardwareDetailsMap["Firmware"] = host.Status.HardwareDetails.Firmware
+				introspectionDetails["NICS"] = host.Status.HardwareDetails.NIC
 			}
 			if extractedProfile.RAM > 0 {
-				hardwareDetailsMap["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
+				introspectionDetails["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
 			}
 
-			validateMap[host.Metadata.Name] = hardwareDetailsMap
+			extractedHardwareDetails[host.Metadata.Name] = introspectionDetails
 		}
 
 	}
-	fmt.Println("Map********", validateMap)
+	fmt.Println("-----------------------------------------")
+	fmt.Printf("Extracted Hardware Details %+v", extractedHardwareDetails)
+	fmt.Println("-----------------------------------------")
 
 	return ctrl.Result{}, nil
 }
