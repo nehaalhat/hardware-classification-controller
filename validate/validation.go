@@ -1,7 +1,7 @@
 package validate
 
 import (
-	valTypes "hardware-classification-controller/validateModel"
+	valTypes "hardware-classification-controller/validate/validateModel"
 	"net"
 	ironic "hardware-classification-controller/ironic"
 )
