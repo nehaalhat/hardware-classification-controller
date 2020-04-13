@@ -7,7 +7,6 @@ import (
 
 //Manager function call the comaprison algorithm as specified by the user
 func Manager(filter string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
-
 	if filter == "maximum" {
 		filt.MaximumFieldComparison(validatedHost, expectedHardwareprofile)
 	} else {

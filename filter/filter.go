@@ -6,8 +6,8 @@ import (
 	valdata "hardware-classification-controller/validate/validated_data"
 )
 
-//MinimumFieldComparison check for the minimum validation
-func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+//MaximumFieldComparison check for the maximum validation
+func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
 		isHostValid := false
@@ -56,8 +56,8 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 	}
 }
 
-//MaximumFieldComparison check for the maximum validation
-func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+//MinimumFieldComparison check for the minimum validation
+func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
 		isHostValid := false
