@@ -41,9 +41,13 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			storage, ok := value.(valTypes.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if storage.SizeGb <= (expectedHardwareprofile.Disk.SizeGB * int64(expectedHardwareprofile.Disk.Count)) {
+				if checkValidStorage(true, storage, expectedHardwareprofile.Disk) {
 					isHostValid = true
 				}
+			}
+
+			if !isHostValid {
+				break
 			}
 		}
 
@@ -95,6 +99,10 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 					isHostValid = true
 				}
 			}
+
+			if !isHostValid {
+				break
+			}
 		}
 
 		if isHostValid {
@@ -104,4 +112,35 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		}
 
 	}
+}
+
+func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hwcc.Disk) bool {
+
+	if filter {
+		if storage.Count <= expectedStorage.Count {
+			for _, disk := range storage.Disk {
+				if disk.SizeGB <= expectedStorage.SizeGB {
+					continue
+				} else {
+					return false
+				}
+			}
+		} else {
+			return false
+		}
+	} else {
+		if storage.Count >= expectedStorage.Count {
+			for _, disk := range storage.Disk {
+				if disk.SizeGB >= expectedStorage.SizeGB {
+					continue
+				} else {
+					return false
+				}
+			}
+		} else {
+			return false
+		}
+	}
+
+	return true
 }

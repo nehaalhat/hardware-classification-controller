@@ -3,6 +3,7 @@ package validate
 import (
 	valTypes "hardware-classification-controller/validate/validateModel"
 	"net"
+
 	//ironic "hardware-classification-controller/ironic"
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 )
@@ -63,12 +64,14 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 			// Get the Storage details from the ironic host and validate it into new structure
 			storage, ok := value.([]bmh.Storage)
 			if ok {
-				var sizeGB int64
+				var disks []valTypes.Disk
+
 				for _, disk := range storage {
-					sizeGB += ConvertBytesToGb(int64(disk.SizeBytes))
+					disks = append(disks, valTypes.Disk{Name: disk.Name, SizeGb: ConvertBytesToGb(int64(disk.SizeBytes))})
 				}
 				validStorage := valTypes.Storage{
-					SizeGb: sizeGB,
+					Count: len(disks),
+					Disk:  disks,
 				}
 
 				hardwareDetails[key] = validStorage

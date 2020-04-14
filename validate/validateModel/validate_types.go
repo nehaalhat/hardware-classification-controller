@@ -15,6 +15,11 @@ type NIC struct {
 }
 
 type Storage struct {
+	Count int    `json:"count"`
+	Disk  []Disk `json:"disk"`
+}
+
+type Disk struct {
 	Name   string `json:"name"`
 	SizeGb int64  `json:"sizeBytes"`
 }
