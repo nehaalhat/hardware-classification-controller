@@ -20,7 +20,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if cpu.Count >= expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				} else {
-					fmt.Println("CPU didnt match")
+					fmt.Println("CPU did not match")
 				}
 			}
 
@@ -30,7 +30,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if ram.RAMGb >= expectedHardwareprofile.RAM {
 					isHostValid = true
 				} else {
-					fmt.Println("RAM didnt match")
+					fmt.Println("RAM did not match")
 				}
 			}
 
@@ -40,7 +40,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if nics.Count >= expectedHardwareprofile.NICS.Count {
 					isHostValid = true
 				} else {
-					fmt.Println("NICS didnt match")
+					fmt.Println("NICS did not match")
 				}
 			}
 
@@ -50,7 +50,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if checkValidStorage(true, storage, expectedHardwareprofile.Disk) {
 					isHostValid = true
 				} else {
-					fmt.Println("Storage didnt match")
+					fmt.Println("Storage did not match")
 				}
 			}
 
@@ -82,7 +82,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if cpu.Count <= expectedHardwareprofile.CPU.Count {
 					isHostValid = true
 				} else {
-					fmt.Println("CPU didnt match")
+					fmt.Println("CPU did not match")
 				}
 			}
 
@@ -92,7 +92,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if ram.RAMGb <= expectedHardwareprofile.RAM {
 					isHostValid = true
 				} else {
-					fmt.Println("RAM didnt match")
+					fmt.Println("RAM did not match")
 				}
 			}
 
@@ -102,7 +102,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if nics.Count <= expectedHardwareprofile.NICS.Count {
 					isHostValid = true
 				} else {
-					fmt.Println("NICS didnt match")
+					fmt.Println("NICS did not match")
 				}
 			}
 
@@ -112,7 +112,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if checkValidStorage(false, storage, expectedHardwareprofile.Disk) {
 					isHostValid = true
 				} else {
-					fmt.Println("Storage didnt match")
+					fmt.Println("Storage did not match")
 				}
 			}
 
@@ -135,9 +135,7 @@ func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hw
 	if filter {
 		if storage.Count >= expectedStorage.Count {
 			for _, disk := range storage.Disk {
-				if disk.SizeGb >= expectedStorage.SizeGB {
-					continue
-				} else {
+				if disk.SizeGb < expectedStorage.SizeGB {
 					return false
 				}
 			}
@@ -147,9 +145,7 @@ func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hw
 	} else {
 		if storage.Count <= expectedStorage.Count {
 			for _, disk := range storage.Disk {
-				if disk.SizeGb <= expectedStorage.SizeGB {
-					continue
-				} else {
+				if disk.SizeGb > expectedStorage.SizeGB {
 					return false
 				}
 			}
