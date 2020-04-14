@@ -95,7 +95,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 			storage, ok := value.(valTypes.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if storage.SizeGb >= expectedHardwareprofile.Disk.SizeGB {
+				if checkValidStorage(false, storage, expectedHardwareprofile.Disk) {
 					isHostValid = true
 				}
 			}
