@@ -135,7 +135,7 @@ func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hw
 	if filter {
 		if storage.Count >= expectedStorage.Count {
 			for _, disk := range storage.Disk {
-				if disk.SizeGb <= expectedStorage.SizeGB {
+				if disk.SizeGb >= expectedStorage.SizeGB {
 					continue
 				} else {
 					return false
@@ -147,7 +147,7 @@ func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hw
 	} else {
 		if storage.Count <= expectedStorage.Count {
 			for _, disk := range storage.Disk {
-				if disk.SizeGb >= expectedStorage.SizeGB {
+				if disk.SizeGb <= expectedStorage.SizeGB {
 					continue
 				} else {
 					return false
