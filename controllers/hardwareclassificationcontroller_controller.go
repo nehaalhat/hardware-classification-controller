@@ -116,7 +116,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 
 	// Get hosts in ready and inspecting status from bmhHostList
 	for _, host := range bmhHostList.Items {
-		if host.Status.Provisioning.State == "ready" || host.Status.Provisioning.State == "inspecting" {
+		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
 		}
 	}
