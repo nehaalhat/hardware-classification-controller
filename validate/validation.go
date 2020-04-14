@@ -38,10 +38,10 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 			}
 
 			// Get the RAM details from the ironic host and validate it into new structure
-			ram, ok := value.(int64)
+			ram, ok := value.(int)
 			if ok {
 				validRAM := valTypes.RAM{
-					RAMGb: int(ConvertBytesToGb(ram)),
+					RAMGb: ram / 1024,
 				}
 				hardwareDetails[key] = validRAM
 			}
