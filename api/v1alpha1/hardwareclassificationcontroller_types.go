@@ -21,39 +21,57 @@ import (
 
 // HardwareClassificationControllerSpec defines the desired state of HardwareClassificationController
 type HardwareClassificationControllerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// ExpectedHardwareConfiguration defines expected hardware configurations for CPU, RAM, Disk, NIC.
 	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
 type ExpectedHardwareConfiguration struct {
-	CustomFilter string `json:"customFilter"`
-	Namespace    string `json:"namespace"`
+	Namespace string `json:"namespace"`
 	// +optional
 	CPU CPU `json:"CPU"`
 	// +optional
 	Disk Disk `json:"Disk"`
 	// +optional
-	NICS NICS `json:"NICS"`
+	NIC NIC `json:"NIC"`
 	// +optional
-	RAM int `json:"RAM"`
+	RAM RAM `json:"RAM"`
 }
 
-// cpu count
+// CPU count
 type CPU struct {
-	Count int `json:"count"`
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
 }
 
 // Disk size and number of disks
 type Disk struct {
-	SizeGB int64 `json:"sizeGB"`
-	Count  int   `json:"count"`
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
+	// +optional
+	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB"`
 }
 
-// NICS count of nics cards
-type NICS struct {
-	Count int `json:"count"`
+// NIC count of nics cards
+type NIC struct {
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
+}
+
+// RAM size
+type RAM struct {
+	// +optional
+	MinimumSizeGB int `json:"minimumSizeGB"`
+	// +optional
+	MaximumSizeGB int `json:"maximumSizeGB"`
 }
 
 // HardwareClassificationControllerStatus defines the observed state of HardwareClassificationController
@@ -69,6 +87,7 @@ type HardwareClassificationControllerStatus struct {
 }
 
 // +kubebuilder:object:root=true
+
 // HardwareClassificationController is the Schema for the hardwareclassificationcontrollers API
 type HardwareClassificationController struct {
 	metav1.TypeMeta   `json:",inline"`

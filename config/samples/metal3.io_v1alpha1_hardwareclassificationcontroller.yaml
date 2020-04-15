@@ -4,13 +4,13 @@ metadata:
   name: hardwareclassificationcontroller-sample
 spec:
   expectedValidationConfiguration:
-      customFilter: minimum
       namespace: metal3
       CPU:
-        count: 4
+        minimumCount: 4
       Disk:
-        sizeGB: 2200
-        count: 2
-      RAM: 20
-      NICS:
-         count: 8
+        minimumCount : 2
+        minimumIndividusalSizeGB: 2200
+      RAM:
+        minimumSizeGB: 16
+      NIC:
+         minimumCount: 8

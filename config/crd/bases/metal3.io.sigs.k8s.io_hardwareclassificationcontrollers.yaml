@@ -37,45 +37,50 @@ spec:
             of HardwareClassificationController
           properties:
             expectedValidationConfiguration:
-              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                Important: Run "make" to regenerate code after modifying this file'
+              description: ExpectedHardwareConfiguration defines expected hardware
+                configurations for CPU, RAM, Disk, NIC.
               properties:
                 CPU:
-                  description: cpu count
+                  description: CPU count
                   properties:
-                    count:
+                    maximumCount:
                       type: integer
-                  required:
-                  - count
+                    minimumCount:
+                      type: integer
                   type: object
                 Disk:
                   description: Disk size and number of disks
                   properties:
-                    count:
+                    maximumCount:
                       type: integer
-                    sizeGB:
+                    maximumIndividualSizeGB:
                       format: int64
                       type: integer
-                  required:
-                  - count
-                  - sizeGB
-                  type: object
-                NICS:
-                  description: NICS count of nics cards
-                  properties:
-                    count:
+                    minimumCount:
                       type: integer
-                  required:
-                  - count
+                    minimumIndividualSizeGB:
+                      format: int64
+                      type: integer
+                  type: object
+                NIC:
+                  description: NIC count of nics cards
+                  properties:
+                    maximumCount:
+                      type: integer
+                    minimumCount:
+                      type: integer
                   type: object
                 RAM:
-                  type: integer
-                customFilter:
-                  type: string
+                  description: RAM size
+                  properties:
+                    maximumSizeGB:
+                      type: integer
+                    minimumSizeGB:
+                      type: integer
+                  type: object
                 namespace:
                   type: string
               required:
-              - customFilter
               - namespace
               type: object
           required:
