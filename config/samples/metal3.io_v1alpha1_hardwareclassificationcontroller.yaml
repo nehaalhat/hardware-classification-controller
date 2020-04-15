@@ -7,10 +7,11 @@ spec:
       customFilter: minimum
       namespace: metal3
       CPU:
-        count: 4
+        count: 10
       Disk:
-        sizeGB: 2200
+        sizeGB: 1000
         count: 2
-      RAM: 20
+      RAM: 10
       NICS:
-         count: 8
+         count: 5
+         

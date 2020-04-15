@@ -74,7 +74,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
-		isHostValid := false
+		isHostValid := true
 
 		for _, value := range details {
 
