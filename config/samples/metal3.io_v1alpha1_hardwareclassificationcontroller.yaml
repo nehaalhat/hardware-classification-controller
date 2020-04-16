@@ -5,11 +5,6 @@ metadata:
 spec:
   expectedValidationConfiguration:
       namespace: metal3
-      CPU:
-        minimumCount: 4
-      Disk:
-        minimumCount : 2
-        minimumIndividusalSizeGB: 2200
       RAM:
         minimumSizeGB: 16
       NIC:

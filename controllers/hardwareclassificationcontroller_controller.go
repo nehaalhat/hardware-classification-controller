@@ -14,6 +14,7 @@ package controllers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/go-logr/logr"
@@ -59,32 +60,17 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	bmhList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
 	if err != nil {
-		return ctrl.Result{}, err
+		r.Log.Error(err, "unable to fetch baremetal host list", "error", err.Error())
+		return ctrl.Result{}, nil
 	}
 
-	extractedHardwareDetails := make(map[string]map[string]interface{})
+	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, bmhList)
 
-	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
-		for _, host := range bmhList {
-			introspectionDetails := make(map[string]interface{})
-
-			if extractedProfile.CPU != (hwcc.CPU{}) {
-				introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
-			}
-			if extractedProfile.Disk != (hwcc.Disk{}) {
-				introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
-			}
-			if extractedProfile.NIC != (hwcc.NIC{}) {
-				introspectionDetails["NIC"] = host.Status.HardwareDetails.NIC
-			}
-			if extractedProfile.RAM.MinimumSizeGB > 0 || extractedProfile.RAM.MaximumSizeGB > 0 {
-				introspectionDetails["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
-			}
-
-			extractedHardwareDetails[host.ObjectMeta.Name] = introspectionDetails
-		}
-
+	if err != nil {
+		r.Log.Error(nil, "Unable to extract details", "error", err.Error())
+		return ctrl.Result{}, nil
 	}
+
 	fmt.Println("-----------------------------------------")
 	fmt.Printf("Extracted Hardware Details %+v", extractedHardwareDetails)
 	fmt.Println("-----------------------------------------")
@@ -109,14 +95,93 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 		return validHostList, err
 	}
 
-	// Get hosts in ready and inspecting status from bmhHostList
+	// Get hosts in ready status from bmhHostList
 	for _, host := range bmhHostList.Items {
-		if host.Status.Provisioning.State == "ready" || host.Status.Provisioning.State == "inspecting" {
+		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
 		}
 	}
 
 	return validHostList, nil
+}
+
+func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
+	bmhList []bmh.BareMetalHost) (map[string]map[string]interface{}, error) {
+
+	extractedHardwareDetails := make(map[string]map[string]interface{})
+	var err error
+
+	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
+
+		for _, host := range bmhList {
+			introspectionDetails := make(map[string]interface{})
+
+			if (extractedProfile.CPU == (hwcc.CPU{})) && (extractedProfile.Disk == (hwcc.Disk{})) &&
+				(extractedProfile.NIC == (hwcc.NIC{})) && (extractedProfile.RAM == (hwcc.RAM{})) {
+				err = errors.New("Provided configurations are not valid")
+				break
+			}
+
+			if extractedProfile.CPU != (hwcc.CPU{}) {
+				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 {
+					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
+				} else {
+					err = errors.New("Enter valid CPU count")
+					break
+				}
+			} else {
+				err = errors.New("Enter valid CPU Details")
+				break
+			}
+
+			if extractedProfile.Disk != (hwcc.Disk{}) {
+				if (extractedProfile.Disk.MinimumCount > 0 || extractedProfile.Disk.MinimumIndividualSizeGB > 0) ||
+					(extractedProfile.Disk.MaximumCount > 0 || extractedProfile.Disk.MaximumIndividualSizeGB > 0) {
+
+					introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
+				} else {
+					err = errors.New("Enter valid Disk count and Disk Size")
+					break
+				}
+			} else {
+				err = errors.New("Enter valid Disk Details")
+				break
+			}
+
+			if extractedProfile.NIC != (hwcc.NIC{}) {
+				if extractedProfile.NIC.MinimumCount > 0 || extractedProfile.NIC.MaximumCount > 0 {
+					introspectionDetails["NIC"] = host.Status.HardwareDetails.NIC
+				} else {
+					err = errors.New("Enter valid NIC count")
+					break
+				}
+			} else {
+				err = errors.New("Enter valid NICS Details")
+				break
+			}
+
+			if extractedProfile.RAM != (hwcc.RAM{}) {
+				if extractedProfile.RAM.MinimumSizeGB > 0 || extractedProfile.RAM.MaximumSizeGB > 0 {
+					introspectionDetails["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
+				} else {
+					err = errors.New("Enter valid RAM size")
+				}
+			} else {
+				err = errors.New("Enter valid RAM size")
+				break
+			}
+
+			if len(introspectionDetails) > 0 {
+				extractedHardwareDetails[host.ObjectMeta.Name] = introspectionDetails
+			}
+		}
+
+	}
+	if err != nil {
+		return extractedHardwareDetails, err
+	}
+
+	return extractedHardwareDetails, nil
 }
 
 // setError sets the ErrorMessage field on the HardwareClassificationController
