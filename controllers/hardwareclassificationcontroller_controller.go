@@ -54,6 +54,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
+	fmt.Println(hardwareClassification)
+
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	fmt.Println("-----------------------------------------")

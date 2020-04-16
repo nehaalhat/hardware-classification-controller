@@ -21,7 +21,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if cpu.Count >= expectedHardwareprofile.CPU.Count {
 					isValid = true
 				} else {
-					fmt.Println("CPU did not match")
+					fmt.Println(hostname, "\n", "CPU count did not match")
 				}
 			}
 
@@ -31,7 +31,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if ram.RAMGb >= expectedHardwareprofile.RAM {
 					isValid = true
 				} else {
-					fmt.Println("RAM did not match")
+					fmt.Println(hostname, "\n", "RAM size did not match")
 				}
 			}
 
@@ -41,17 +41,15 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if nics.Count >= expectedHardwareprofile.NICS.Count {
 					isValid = true
 				} else {
-					fmt.Println("NICS did not match")
+					fmt.Println(hostname, "\n", "NICS count did not match")
 				}
 			}
 
 			storage, ok := value.(valTypes.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if checkValidStorage(true, storage, expectedHardwareprofile.Disk) {
+				if checkValidStorage(true, hostname, storage, expectedHardwareprofile.Disk) {
 					isValid = true
-				} else {
-					fmt.Println("Storage did not match")
 				}
 			}
 
@@ -62,9 +60,9 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		}
 
 		if isHostValid {
-			fmt.Println(hostname, " Is a Valid Host")
+			fmt.Println(hostname, " is a Valid host ")
 		} else {
-			fmt.Println(hostname, " Is NOT a Valid Host")
+			fmt.Println(hostname, " is not a valid host")
 		}
 
 	}
@@ -86,7 +84,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if cpu.Count <= expectedHardwareprofile.CPU.Count {
 					isValid = true
 				} else {
-					fmt.Println("CPU did not match")
+					fmt.Println(hostname, "\n", "CPU count did not match")
 				}
 			}
 
@@ -96,7 +94,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if ram.RAMGb <= expectedHardwareprofile.RAM {
 					isValid = true
 				} else {
-					fmt.Println("RAM did not match")
+					fmt.Println(hostname, "\n", "RAM size did not match")
 				}
 			}
 
@@ -106,17 +104,15 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 				if nics.Count <= expectedHardwareprofile.NICS.Count {
 					isValid = true
 				} else {
-					fmt.Println("NICS did not match")
+					fmt.Println(hostname, "\n", "NICS count did not match")
 				}
 			}
 
 			storage, ok := value.(valTypes.Storage)
 			if ok {
 				fmt.Println("storage*************", storage)
-				if checkValidStorage(false, storage, expectedHardwareprofile.Disk) {
+				if checkValidStorage(false, hostname, storage, expectedHardwareprofile.Disk) {
 					isValid = true
-				} else {
-					fmt.Println("Storage did not match")
 				}
 			}
 
@@ -127,34 +123,38 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		}
 
 		if isHostValid {
-			fmt.Println(hostname, " Is a Valid Host")
+			fmt.Println(hostname, " is a Valid host ")
 		} else {
-			fmt.Println(hostname, " Is NOT a Valid Host")
+			fmt.Println(hostname, " is not a valid host")
 		}
 
 	}
 }
 
-func checkValidStorage(filter bool, storage valTypes.Storage, expectedStorage hwcc.Disk) bool {
+func checkValidStorage(filter bool, hostname string, storage valTypes.Storage, expectedStorage hwcc.Disk) bool {
 
 	if filter {
 		if storage.Count >= expectedStorage.Count {
 			for _, disk := range storage.Disk {
 				if disk.SizeGb < expectedStorage.SizeGB {
+					fmt.Println(hostname, "\n", "Disk size did not match")
 					return false
 				}
 			}
 		} else {
+			fmt.Println(hostname, "\n", "Disk count did not match")
 			return false
 		}
 	} else {
 		if storage.Count <= expectedStorage.Count {
 			for _, disk := range storage.Disk {
 				if disk.SizeGb > expectedStorage.SizeGB {
+					fmt.Println(hostname, "\n", "Disk size did not match")
 					return false
 				}
 			}
 		} else {
+			fmt.Println(hostname, "\n", "Disk count did not match")
 			return false
 		}
 	}
