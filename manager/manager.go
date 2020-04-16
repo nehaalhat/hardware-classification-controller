@@ -6,11 +6,11 @@ import (
 )
 
 //Manager function call the comaprison algorithm as specified by the user
-func Manager(customFilter string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+func Manager(profileName string, customFilter string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	if customFilter == "maximum" {
-		filter.MaximumFieldComparison(validatedHost, expectedHardwareprofile)
+		filter.MaximumFieldComparison(profileName, validatedHost, expectedHardwareprofile)
 	} else {
-		filter.MinimumFieldComparison(validatedHost, expectedHardwareprofile)
+		filter.MinimumFieldComparison(profileName, validatedHost, expectedHardwareprofile)
 	}
 
 }

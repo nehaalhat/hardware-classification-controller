@@ -54,8 +54,6 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	fmt.Println(hardwareClassification.ObjectMeta.Name)
-
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	fmt.Println("-----------------------------------------")
@@ -141,7 +139,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	if len(extractedHardwareDetails) > 0 {
 		validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
 		fmt.Println(validatedHardwareDetails)
-		manager.Manager(extractedProfile.CustomFilter, validatedHardwareDetails, extractedProfile)
+		manager.Manager(hardwareClassification.ObjectMeta.Name, extractedProfile.CustomFilter, validatedHardwareDetails, extractedProfile)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 //MinimumFieldComparison check for the minimum validation
-func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+func MinimumFieldComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
 		isHostValid := true
@@ -17,7 +17,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			cpu, ok := value.(valTypes.CPU)
 			if ok {
-				fmt.Println("CPU*************", cpu)
+				fmt.Println("Fetched CPU Count", cpu)
 				if cpu.Count >= expectedHardwareprofile.CPU.Count {
 					isValid = true
 				} else {
@@ -27,7 +27,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			ram, ok := value.(valTypes.RAM)
 			if ok {
-				fmt.Println("RAM*************", ram)
+				fmt.Println("Fetched RAM Size", ram)
 				if ram.RAMGb >= expectedHardwareprofile.RAM {
 					isValid = true
 				} else {
@@ -37,7 +37,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			nics, ok := value.(valTypes.NIC)
 			if ok {
-				fmt.Println("NICS*************", nics)
+				fmt.Println("Fetched NICS Count", nics)
 				if nics.Count >= expectedHardwareprofile.NICS.Count {
 					isValid = true
 				} else {
@@ -47,7 +47,7 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			storage, ok := value.(valTypes.Storage)
 			if ok {
-				fmt.Println("storage*************", storage)
+				fmt.Println("Fetched Disk Details", storage)
 				if checkValidStorage(true, hostname, storage, expectedHardwareprofile.Disk) {
 					isValid = true
 				}
@@ -60,16 +60,16 @@ func MinimumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		}
 
 		if isHostValid {
-			fmt.Println(hostname, " is a Valid host ")
+			fmt.Println(hostname, " Matches profile ", ProfileName)
 		} else {
-			fmt.Println(hostname, " is not a valid host")
+			fmt.Println(hostname, " Does not matches profile ", ProfileName)
 		}
 
 	}
 }
 
 //MaximumFieldComparison check for the maximum validation
-func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+func MaximumFieldComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
 	for hostname, details := range validatedHost {
 		fmt.Println(hostname)
 		isHostValid := true
@@ -80,7 +80,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			cpu, ok := value.(valTypes.CPU)
 			if ok {
-				fmt.Println("CPU*************", cpu)
+				fmt.Println("Fetched CPU Count", cpu)
 				if cpu.Count <= expectedHardwareprofile.CPU.Count {
 					isValid = true
 				} else {
@@ -90,7 +90,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			ram, ok := value.(valTypes.RAM)
 			if ok {
-				fmt.Println("RAM*************", ram)
+				fmt.Println("Fetched RAM Size", ram)
 				if ram.RAMGb <= expectedHardwareprofile.RAM {
 					isValid = true
 				} else {
@@ -100,7 +100,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			nics, ok := value.(valTypes.NIC)
 			if ok {
-				fmt.Println("NICS*************", nics)
+				fmt.Println("Fetched NICS Count", nics)
 				if nics.Count <= expectedHardwareprofile.NICS.Count {
 					isValid = true
 				} else {
@@ -110,7 +110,7 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 
 			storage, ok := value.(valTypes.Storage)
 			if ok {
-				fmt.Println("storage*************", storage)
+				fmt.Println("Fetched Disk Details", storage)
 				if checkValidStorage(false, hostname, storage, expectedHardwareprofile.Disk) {
 					isValid = true
 				}
@@ -123,9 +123,9 @@ func MaximumFieldComparison(validatedHost map[string]map[string]interface{}, exp
 		}
 
 		if isHostValid {
-			fmt.Println(hostname, " is a Valid host ")
+			fmt.Println(hostname, " Matches profile ", ProfileName)
 		} else {
-			fmt.Println(hostname, " is not a valid host")
+			fmt.Println(hostname, " Does not matches profile ", ProfileName)
 		}
 
 	}
