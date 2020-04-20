@@ -108,17 +108,16 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 	bmhList []bmh.BareMetalHost) (map[string]map[string]interface{}, error) {
 
-	extractedHardwareDetails := make(map[string]map[string]interface{})
 	var err error
+	extractedHardwareDetails := make(map[string]map[string]interface{})
 
 	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
-
 		for _, host := range bmhList {
 			introspectionDetails := make(map[string]interface{})
 
 			if (extractedProfile.CPU == (hwcc.CPU{})) && (extractedProfile.Disk == (hwcc.Disk{})) &&
 				(extractedProfile.NIC == (hwcc.NIC{})) && (extractedProfile.RAM == (hwcc.RAM{})) {
-				err = errors.New("Provided configurations are not valid")
+				err = errors.New("Ateleast one of the configuration should be provided")
 				break
 			}
 
@@ -126,49 +125,37 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
-					err = errors.New("Enter valid CPU count")
+					err = errors.New("Enter valid CPU Count")
 					break
 				}
-			} else {
-				err = errors.New("Enter valid CPU Details")
-				break
 			}
 
 			if extractedProfile.Disk != (hwcc.Disk{}) {
 				if (extractedProfile.Disk.MinimumCount > 0 || extractedProfile.Disk.MinimumIndividualSizeGB > 0) ||
 					(extractedProfile.Disk.MaximumCount > 0 || extractedProfile.Disk.MaximumIndividualSizeGB > 0) {
-
 					introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
 				} else {
-					err = errors.New("Enter valid Disk count and Disk Size")
+					err = errors.New("Enter valid Disk Details")
 					break
 				}
-			} else {
-				err = errors.New("Enter valid Disk Details")
-				break
 			}
 
 			if extractedProfile.NIC != (hwcc.NIC{}) {
 				if extractedProfile.NIC.MinimumCount > 0 || extractedProfile.NIC.MaximumCount > 0 {
 					introspectionDetails["NIC"] = host.Status.HardwareDetails.NIC
 				} else {
-					err = errors.New("Enter valid NIC count")
+					err = errors.New("Enter valid NICS Count")
 					break
 				}
-			} else {
-				err = errors.New("Enter valid NICS Details")
-				break
 			}
 
 			if extractedProfile.RAM != (hwcc.RAM{}) {
 				if extractedProfile.RAM.MinimumSizeGB > 0 || extractedProfile.RAM.MaximumSizeGB > 0 {
 					introspectionDetails["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
 				} else {
-					err = errors.New("Enter valid RAM size")
+					err = errors.New("Enter valid RAM size in GB")
+					break
 				}
-			} else {
-				err = errors.New("Enter valid RAM size")
-				break
 			}
 
 			if len(introspectionDetails) > 0 {
