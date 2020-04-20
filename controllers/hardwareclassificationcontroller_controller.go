@@ -26,8 +26,11 @@ import (
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // HardwareClassificationControllerReconciler reconciles a HardwareClassificationController object
@@ -176,8 +179,33 @@ func setError(hwcc *hwcc.HardwareClassificationController, message string) {
 	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
 }
 
+// SetupWithManager will add watches for this controller
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassificationController{}).
+		Watches(
+			&source.Kind{Type: &bmh.BareMetalHost{}},
+			&handler.EnqueueRequestsFromMapFunc{
+				ToRequests: handler.ToRequestsFunc(r.BareMetalHostToMetal3Machines),
+			},
+		).
 		Complete(r)
+}
+
+// BareMetalHostToMetal3Machines will return a reconcile request for a Metal3Machine if the event is for a
+// BareMetalHost and that BareMetalHost references a Metal3Machine.
+func (r *HardwareClassificationControllerReconciler) BareMetalHostToMetal3Machines(obj handler.MapObject) []ctrl.Request {
+	if host, ok := obj.Object.(*bmh.BareMetalHost); ok {
+		if host.Spec.ConsumerRef != nil {
+			return []ctrl.Request{
+				ctrl.Request{
+					NamespacedName: types.NamespacedName{
+						Name:      host.Spec.ConsumerRef.Name,
+						Namespace: host.Spec.ConsumerRef.Namespace,
+					},
+				},
+			}
+		}
+	}
+	return []ctrl.Request{}
 }
