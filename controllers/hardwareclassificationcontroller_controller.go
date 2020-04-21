@@ -80,7 +80,8 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	if len(extractedHardwareDetails) > 0 {
 		validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
 		fmt.Println(validatedHardwareDetails)
-		filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+		fmt.Println("List of Comapred Host", comparedHost)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}

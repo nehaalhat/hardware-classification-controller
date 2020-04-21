@@ -7,7 +7,9 @@ import (
 )
 
 // MinMaxComparison it will compare the minimum and maximum comparison based on the value provided by the user and check for the valid host
-func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) {
+func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) []string {
+
+	var comparedHost []string
 
 	for hostname, details := range validatedHost {
 
@@ -57,12 +59,15 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 		}
 
 		if isHostValid {
+			comparedHost = append(comparedHost, hostname)
 			fmt.Println(hostname, " Matches profile ", ProfileName)
 		} else {
 			fmt.Println(hostname, " Does not matches profile ", ProfileName)
 		}
 
 	}
+
+	return comparedHost
 
 }
 
