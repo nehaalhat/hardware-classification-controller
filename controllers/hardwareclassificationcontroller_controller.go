@@ -23,6 +23,8 @@ import (
 	"k8s.io/utils/pointer"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
+	filter "hardware-classification-controller/filter"
+	validate "hardware-classification-controller/validation"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -74,6 +76,14 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	fmt.Println("-----------------------------------------")
 	fmt.Printf("Extracted Hardware Details %+v", extractedHardwareDetails)
 	fmt.Println("-----------------------------------------")
+
+	if len(extractedHardwareDetails) > 0 {
+		validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
+		fmt.Println(validatedHardwareDetails)
+		filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+	} else {
+		fmt.Println("Provided configurations are not valid")
+	}
 
 	return ctrl.Result{}, nil
 }
