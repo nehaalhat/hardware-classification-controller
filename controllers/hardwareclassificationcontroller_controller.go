@@ -188,22 +188,22 @@ func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.M
 		Watches(
 			&source.Kind{Type: &bmh.BareMetalHost{}},
 			&handler.EnqueueRequestsFromMapFunc{
-				ToRequests: handler.ToRequestsFunc(r.BareMetalHostToMetal3Machines),
+				ToRequests: handler.ToRequestsFunc(r.BareMetalHostToHardwareClassification),
 			},
 		).
 		Complete(r)
 }
 
-// BareMetalHostToMetal3Machines will return a reconcile request for a Metal3Machine if the event is for a
-// BareMetalHost and that BareMetalHost references a Metal3Machine.
-func (r *HardwareClassificationControllerReconciler) BareMetalHostToMetal3Machines(obj handler.MapObject) []ctrl.Request {
+// BareMetalHostToHardwareClassification will return a reconcile request for a
+// HardwareClassification if the event is for a BareMetalHost.
+func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClassification(obj handler.MapObject) []ctrl.Request {
 	if host, ok := obj.Object.(*bmh.BareMetalHost); ok {
-		if host.Spec.ConsumerRef != nil {
+		if host.Status.Provisioning.State == "ready" {
 			return []ctrl.Request{
 				ctrl.Request{
 					NamespacedName: types.NamespacedName{
-						Name:      host.Spec.ConsumerRef.Name,
-						Namespace: host.Spec.ConsumerRef.Namespace,
+						Name:      "hardwareclassificationcontroller-sample",
+						Namespace: "default",
 					},
 				},
 			}
