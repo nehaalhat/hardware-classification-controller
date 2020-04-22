@@ -47,6 +47,8 @@ spec:
                       type: integer
                     minimumCount:
                       type: integer
+                    minimumSpeed:
+                      type: string
                   type: object
                 Disk:
                   description: Disk size and number of disks

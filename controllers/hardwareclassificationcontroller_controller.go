@@ -122,7 +122,8 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 			}
 
 			if extractedProfile.CPU != (hwcc.CPU{}) {
-				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 {
+				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 ||
+					float32(extractedProfile.CPU.MinimumSpeed.Value()) > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
 					err = errors.New("Enter valid CPU Count")
