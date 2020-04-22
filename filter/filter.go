@@ -29,7 +29,7 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 
 			ram, RAMOK := value.(valTypes.RAM)
 			if RAMOK {
-				fmt.Println("Fetched CPU Count", ram)
+				fmt.Println("Fetched RAM Count", ram)
 				if checkRAM(ram, expectedHardwareprofile.RAM) {
 					isValid = true
 				}
@@ -37,7 +37,7 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 
 			nics, NICSOK := value.(valTypes.NIC)
 			if NICSOK {
-				fmt.Println("Fetched CPU Count", nics)
+				fmt.Println("Fetched NICS Count", nics)
 				if checkNICS(nics, expectedHardwareprofile.NIC) {
 					isValid = true
 				}

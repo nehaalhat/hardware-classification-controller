@@ -6,12 +6,12 @@ spec:
   expectedValidationConfiguration:
       namespace: metal3
       CPU:
-        minimumCount: 48
-        maximumCount: 72
-      Disk:
-        minimumCount: 2
-        minimumIndividualSize: 2200
+        minimumCount: 2       
+      Disk:  
+        minimumCount: 1      
+        minimumIndividualSize: 1000
       RAM:
-        minimumSizeGB: 32
+        minimumSizeGB: 6        
       NIC:
-         minimumCount: 8
+         minimumCount: 1
+         
