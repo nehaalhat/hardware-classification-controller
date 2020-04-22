@@ -60,7 +60,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	fmt.Printf("Extracted expected hardware configuration successfully %+v", extractedProfile)
 	fmt.Println("-----------------------------------------")
 
-	bmhList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
+	bmhList, bmhobj, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
 	if err != nil {
 		r.Log.Error(err, "unable to fetch baremetal host list", "error", err.Error())
 		return ctrl.Result{}, nil
@@ -82,6 +82,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
+		setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, bmhobj)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
@@ -89,10 +90,35 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	return ctrl.Result{}, nil
 }
 
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, error) {
+func setvalidLabel(r *HardwareClassificationControllerReconciler, ctx context.Context, Profilename string, matchedHosts []string, bmhobj bmh.BareMetalHostList) {
+	for _, validHost := range matchedHosts {
+		for i, host := range bmhobj.Items {
+			m := make(map[string]string)
+			m[Profilename] = "matches"
+			if validHost == host.Name {
+				availableLabels := bmhobj.Items[i].GetLabels()
+				fmt.Println("Already Available labels", availableLabels)
+				for key, label := range availableLabels {
+					m[key] = label
+				}
+				fmt.Println("Final labels to be applied", m)
+				bmhobj.Items[i].SetLabels(m)
+				err := r.Client.Update(ctx, &bmhobj.Items[i])
+				if err != nil {
+					fmt.Println("Label set Error", err)
+				} else {
+					fmt.Println("Labels updated successfully")
+
+				}
+			}
+		}
+	}
+}
+
+func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, bmh.BareMetalHostList, error) {
 
 	bmhHostList := bmh.BareMetalHostList{}
-	validHostList := []bmh.BareMetalHost{}
+	var validHostList []bmh.BareMetalHost
 	hardwareClassification := &hwcc.HardwareClassificationController{}
 
 	opts := &client.ListOptions{
@@ -103,7 +129,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	err := r.Client.List(ctx, &bmhHostList, opts)
 	if err != nil {
 		setError(hardwareClassification, "Failed to get BareMetalHost List")
-		return validHostList, err
+		return validHostList, bmhHostList, err
 	}
 
 	// Get hosts in ready status from bmhHostList
@@ -113,7 +139,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 		}
 	}
 
-	return validHostList, nil
+	return validHostList, bmhHostList, nil
 }
 
 func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
@@ -128,7 +154,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 
 			if (extractedProfile.CPU == (hwcc.CPU{})) && (extractedProfile.Disk == (hwcc.Disk{})) &&
 				(extractedProfile.NIC == (hwcc.NIC{})) && (extractedProfile.RAM == (hwcc.RAM{})) {
-				err = errors.New("Ateleast one of the configuration should be provided")
+				err = errors.New("atleast one of the configuration should be provided")
 				break
 			}
 
@@ -136,7 +162,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
-					err = errors.New("Enter valid CPU Count")
+					err = errors.New("enter valid CPU Count")
 					break
 				}
 			}
@@ -146,7 +172,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 					(extractedProfile.Disk.MaximumCount > 0 || extractedProfile.Disk.MaximumIndividualSizeGB > 0) {
 					introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
 				} else {
-					err = errors.New("Enter valid Disk Details")
+					err = errors.New("enter valid Disk Details")
 					break
 				}
 			}
@@ -155,7 +181,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 				if extractedProfile.NIC.MinimumCount > 0 || extractedProfile.NIC.MaximumCount > 0 {
 					introspectionDetails["NIC"] = host.Status.HardwareDetails.NIC
 				} else {
-					err = errors.New("Enter valid NICS Count")
+					err = errors.New("enter valid NICS Count")
 					break
 				}
 			}
@@ -164,7 +190,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 				if extractedProfile.RAM.MinimumSizeGB > 0 || extractedProfile.RAM.MaximumSizeGB > 0 {
 					introspectionDetails["RAMMebibytes"] = host.Status.HardwareDetails.RAMMebibytes
 				} else {
-					err = errors.New("Enter valid RAM size in GB")
+					err = errors.New("enter valid RAM size in GB")
 					break
 				}
 			}
