@@ -8,7 +8,7 @@ spec:
       CPU:
         minimumCount: 48
         maximumCount: 72
-        minimumSpeed: "abc"
+        minimumSpeed: "2.7"
       Disk:
         minimumCount: 2
         minimumIndividualSize: 2200

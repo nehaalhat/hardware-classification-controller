@@ -123,7 +123,8 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 
 			if extractedProfile.CPU != (hwcc.CPU{}) {
 				if extractedProfile.CPU.MinimumCount > 0 || extractedProfile.CPU.MaximumCount > 0 ||
-					float32(extractedProfile.CPU.MinimumSpeed.Value()) > 0 {
+					float32(extractedProfile.CPU.MinimumSpeed.Value()) > 0 ||
+					float32(extractedProfile.CPU.MaximumSpeed.Value()) > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
 					err = errors.New("Enter valid CPU Count")
@@ -132,8 +133,8 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 			}
 
 			if extractedProfile.Disk != (hwcc.Disk{}) {
-				if (extractedProfile.Disk.MinimumCount > 0 || extractedProfile.Disk.MinimumIndividualSizeGB > 0) ||
-					(extractedProfile.Disk.MaximumCount > 0 || extractedProfile.Disk.MaximumIndividualSizeGB > 0) {
+				if extractedProfile.Disk.MinimumCount > 0 || extractedProfile.Disk.MinimumIndividualSizeGB > 0 ||
+					extractedProfile.Disk.MaximumCount > 0 || extractedProfile.Disk.MaximumIndividualSizeGB > 0 {
 					introspectionDetails["Disk"] = host.Status.HardwareDetails.Storage
 				} else {
 					err = errors.New("Enter valid Disk Details")

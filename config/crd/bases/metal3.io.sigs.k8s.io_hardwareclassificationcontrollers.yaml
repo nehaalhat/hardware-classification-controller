@@ -45,6 +45,8 @@ spec:
                   properties:
                     maximumCount:
                       type: integer
+                    maximumSpeed:
+                      type: string
                     minimumCount:
                       type: integer
                     minimumSpeed:

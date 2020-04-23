@@ -39,9 +39,6 @@ type ExpectedHardwareConfiguration struct {
 	RAM RAM `json:"RAM"`
 }
 
-// ClockSpeed is a clock speed in MHz
-//type ClockSpeed resource.Quantity
-
 // CPU count
 type CPU struct {
 	// +optional
@@ -51,7 +48,7 @@ type CPU struct {
 	// +optional
 	MinimumSpeed resource.Quantity `json:"minimumSpeed"`
 	// +optional
-	//	MaximumSpeed ClockSpeed `json:"maximumSpeed"`
+	MaximumSpeed resource.Quantity `json:"maximumSpeed"`
 }
 
 // Disk size and number of disks
