@@ -13,6 +13,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -38,15 +39,6 @@ type ExpectedHardwareConfiguration struct {
 	RAM RAM `json:"RAM"`
 }
 
-// ClockSpeed is a clock speed in MHz
-//type ClockSpeed float32
-
-// ClockSpeed multipliers
-/*const (
-	MegaHertz ClockSpeed = 1.0
-	GigaHertz            = 1000 * MegaHertz
-)*/
-
 // CPU count
 type CPU struct {
 	// +optional
@@ -54,9 +46,9 @@ type CPU struct {
 	// +optional
 	MaximumCount int `json:"maximumCount"`
 	// +optional
-	//MinimumSpeed ClockSpeed `json:"minimumSpeed"`
+	MinimumSpeed resource.Quantity `json:"minimumSpeed"`
 	// +optional
-	//	MaximumSpeed ClockSpeed `json:"maximumSpeed"`
+	MaximumSpeed resource.Quantity `json:"maximumSpeed"`
 }
 
 // Disk size and number of disks

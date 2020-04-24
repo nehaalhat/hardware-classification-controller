@@ -45,8 +45,12 @@ spec:
                   properties:
                     maximumCount:
                       type: integer
+                    maximumSpeed:
+                      type: string
                     minimumCount:
                       type: integer
+                    minimumSpeed:
+                      type: string
                   type: object
                 Disk:
                   description: Disk size and number of disks
