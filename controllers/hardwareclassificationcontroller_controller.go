@@ -215,6 +215,5 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 			checkValidHost[host.ObjectMeta.Name] = true
 			result = append(result, ctrl.Request{NamespacedName: name})
 		}
-	}
 	return result
 }
