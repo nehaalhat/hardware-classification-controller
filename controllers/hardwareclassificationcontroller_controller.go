@@ -20,6 +20,7 @@ import (
 	"github.com/go-logr/logr"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 
@@ -33,6 +34,7 @@ import (
 
 var validHostList = []bmh.BareMetalHost{}
 var checkValidHost = make(map[string]bool)
+var name = types.NamespacedName{}
 
 // HardwareClassificationControllerReconciler reconciles a HardwareClassificationController object
 type HardwareClassificationControllerReconciler struct {
@@ -46,7 +48,7 @@ type HardwareClassificationControllerReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
-
+	name = req.NamespacedName
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassificationController{}
 	if err := r.Client.Get(ctx, req.NamespacedName, hardwareClassification); err != nil {
@@ -61,12 +63,6 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	fmt.Println("-----------------------------------------")
 	fmt.Printf("Extracted expected hardware configuration successfully %+v", extractedProfile)
 	fmt.Println("-----------------------------------------")
-
-	//bmhList, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
-	// if err != nil {
-	// 	r.Log.Error(err, "unable to fetch baremetal host list", "error", err.Error())
-	// 	return ctrl.Result{}, nil
-	// }
 
 	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, validHostList)
 
@@ -85,14 +81,12 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
 
 	bmhHostList := bmh.BareMetalHostList{}
-	//validHostList := []bmh.BareMetalHost{}
-	//hardwareClassification := &hwcc.HardwareClassificationController{}
 
 	opts := &client.ListOptions{
 		Namespace: namespace,
 	}
 
-	// Get list of BareMetalHost
+	// Get list of BareMetalHost from BMO
 	err := r.Client.List(ctx, &bmhHostList, opts)
 	if err != nil {
 		r.Log.Error(nil, "Unable to extract details", "error", err.Error())
@@ -198,64 +192,29 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 
 	if len(validHostList) == 0 {
 		validHostList = fetchBmhHostList(context.Background(), r, "metal3")
-		//fmt.Println("First time fetched BMH list", validHostList)
-		fmt.Println("Valid Host Map**************", checkValidHost)
 	}
 
 	if host, ok := obj.Object.(*bmh.BareMetalHost); ok {
-		//exist := true
-		//isValid := true
 
 		name := client.ObjectKey{Namespace: "default", Name: "hardwareclassificationcontroller-sample"}
 
+		// If host found in validHostList and current provisioining state
+		// is not ready then remove host from validHostList. Else if host
+		// not found in validHostList and current provisioning state is ready
+		// then append it to validHostList.
 		if checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State != "ready" {
-			fmt.Println("Host Found and not in ready state**********", host.ObjectMeta.Name)
 			for i, validHost := range validHostList {
 				if validHost.ObjectMeta.Name == host.ObjectMeta.Name {
 					validHostList = append(validHostList[:i], validHostList[i+1:]...)
 					checkValidHost[validHost.ObjectMeta.Name] = false
-					fmt.Println("Updated Map********", checkValidHost)
-					fmt.Println("Updated List*******", validHostList)
 					result = append(result, ctrl.Request{NamespacedName: name})
 				}
 			}
 		} else if !checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State == "ready" {
-			fmt.Println("Host Not found so Appending BMH LIST*************", host.ObjectMeta.Name)
 			validHostList = append(validHostList, *host)
 			checkValidHost[host.ObjectMeta.Name] = true
 			result = append(result, ctrl.Request{NamespacedName: name})
 		}
-
-		/*for i := 0; i < len(validHostList); i++ {
-		//exist = false
-		//isValid := false
-
-		if checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State != "ready" {
-			//exist = true
-			fmt.Println("Inside If condition**********", host.ObjectMeta.Name)
-			fmt.Println("Length of validHostList*********", validHostList)
-			validHostList = append(validHostList[:1], validHostList[i+1:]...)
-			checkValidHost[host.ObjectMeta.Name] = false
-			result = append(result, ctrl.Request{NamespacedName: name})
-		} else if !checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State == "ready" {
-			//isValid = true
-			//exist = false
-			//break
-			fmt.Println("Appending BMH LIST*************", host.ObjectMeta.Name)
-			validHostList = append(validHostList, *host)
-			result = append(result, ctrl.Request{NamespacedName: name})
-		}
-
-		/*if !exist {
-			isValid = false
-		}*/
-
 	}
-	/*if !isValid && host.Status.Provisioning.State == "ready" {
-		fmt.Println("Appending BMH LIST*************", host.ObjectMeta.Name)
-		validHostList = append(validHostList, *host)
-		result = append(result, ctrl.Request{NamespacedName: name})
-	}*/
-
 	return result
 }
