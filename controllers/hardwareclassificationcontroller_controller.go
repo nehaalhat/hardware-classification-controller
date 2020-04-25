@@ -196,7 +196,7 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 
 	if host, ok := obj.Object.(*bmh.BareMetalHost); ok {
 
-		name := client.ObjectKey{Namespace: "default", Name: "hardwareclassificationcontroller-sample"}
+		//name := client.ObjectKey{Namespace: "default", Name: "hardwareclassificationcontroller-sample"}
 
 		// If host found in validHostList and current provisioining state
 		// is not ready then remove host from validHostList. Else if host
