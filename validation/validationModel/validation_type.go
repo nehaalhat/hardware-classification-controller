@@ -25,5 +25,6 @@ type Disk struct {
 }
 
 type CPU struct {
-	Count int `json:"count"`
+	Count      int     `json:"count"`
+	ClockSpeed float64 `json:"clockspeed"`
 }

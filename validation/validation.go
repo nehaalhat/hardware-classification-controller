@@ -32,7 +32,8 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 			cpu, ok := value.(bmh.CPU)
 			if ok {
 				validCPU := valTypes.CPU{
-					Count: cpu.Count,
+					Count:      cpu.Count,
+					ClockSpeed: float64(cpu.ClockMegahertz),
 				}
 				hardwareDetails[key] = validCPU
 			}
