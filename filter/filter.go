@@ -128,6 +128,24 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 	}
 
+	// MinSpeed, _ := expectedCPU.MaximumSpeed.AsInt64()
+	// if MinSpeed > 0.0 && expectedCPU.MinimumSpeed > 0 {
+	// 	if expectedCPU.MinimumCount > cpu.Count && expectedCPU.MaximumCount < cpu.Count {
+	// 		return false
+	// 	}
+
+	// } else if expectedCPU.MaximumCount > 0 {
+	// 	if expectedCPU.MaximumCount < cpu.Count {
+	// 		return false
+	// 	}
+
+	// } else if expectedCPU.MinimumCount > 0 {
+	// 	if expectedCPU.MinimumCount > cpu.Count {
+	// 		return false
+	// 	}
+
+	// }
+
 	return true
 
 }

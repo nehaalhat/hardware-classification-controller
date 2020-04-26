@@ -56,8 +56,9 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
+	MinSped, _ := extractedProfile.CPU.MinimumSpeed.AsInt64()
 	fmt.Println("-----------------------------------------")
-	fmt.Printf("Extracted expected hardware configuration successfully %+v", extractedProfile.CPU.MinimumSpeed)
+	fmt.Printf("Extracted expected hardware configuration successfully %+v", MinSped)
 	fmt.Println("-----------------------------------------")
 
 	bmhList, bmhobj, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
