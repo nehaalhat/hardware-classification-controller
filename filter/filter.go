@@ -4,6 +4,8 @@ import (
 	"fmt"
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	valTypes "hardware-classification-controller/validation/validationModel"
+
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // MinMaxComparison it will compare the minimum and maximum comparison based on the value provided by the user and check for the valid host
@@ -128,23 +130,28 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 	}
 
-	// MinSpeed, _ := expectedCPU.MaximumSpeed.AsInt64()
-	// if MinSpeed > 0.0 && expectedCPU.MinimumSpeed > 0 {
-	// 	if expectedCPU.MinimumCount > cpu.Count && expectedCPU.MaximumCount < cpu.Count {
-	// 		return false
-	// 	}
+	if expectedCPU.MaximumSpeed != (resource.Quantity{}) || expectedCPU.MinimumSpeed != (resource.Quantity{}) {
+		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		if MinSpeed > 0 && MaxSpeed > 0 {
+			if MinSpeed > cpu.ClockSpeed && MaxSpeed < cpu.ClockSpeed {
+				return false
+			}
 
-	// } else if expectedCPU.MaximumCount > 0 {
-	// 	if expectedCPU.MaximumCount < cpu.Count {
-	// 		return false
-	// 	}
+		}
+	} else if expectedCPU.MaximumSpeed != (resource.Quantity{}) {
+		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		if MaxSpeed < cpu.ClockSpeed {
+			return false
+		}
 
-	// } else if expectedCPU.MinimumCount > 0 {
-	// 	if expectedCPU.MinimumCount > cpu.Count {
-	// 		return false
-	// 	}
+	} else if expectedCPU.MinimumSpeed != (resource.Quantity{}) {
+		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		if MinSpeed > cpu.ClockSpeed {
+			return false
+		}
 
-	// }
+	}
 
 	return true
 
