@@ -20,7 +20,7 @@ import (
 	"github.com/go-logr/logr"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/utils/pointer"
+	"k8s.io/apimachinery/pkg/types"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	filter "hardware-classification-controller/filter"
@@ -30,7 +30,13 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
+
+var validHostList = []bmh.BareMetalHost{}
+var checkValidHost = make(map[string]bool)
+var name = types.NamespacedName{}
 
 // HardwareClassificationControllerReconciler reconciles a HardwareClassificationController object
 type HardwareClassificationControllerReconciler struct {
@@ -44,7 +50,7 @@ type HardwareClassificationControllerReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
 func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
-
+	name = req.NamespacedName
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassificationController{}
 	if err := r.Client.Get(ctx, req.NamespacedName, hardwareClassification); err != nil {
@@ -62,13 +68,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	fmt.Printf("Extracted expected hardware configuration successfully %+v", spd)
 	fmt.Println("-----------------------------------------")
 
-	bmhList, bmhobj, err := fetchBmhHostList(ctx, r, hardwareClassification.Spec.ExpectedHardwareConfiguration.Namespace)
-	if err != nil {
-		r.Log.Error(err, "unable to fetch baremetal host list", "error", err.Error())
-		return ctrl.Result{}, nil
-	}
-
-	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, bmhList)
+	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, validHostList)
 
 	if err != nil {
 		r.Log.Error(nil, "Unable to extract details", "error", err.Error())
@@ -84,7 +84,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
-		setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, bmhobj)
+		// setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, bmhobj)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
@@ -92,56 +92,30 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	return ctrl.Result{}, nil
 }
 
-func setvalidLabel(r *HardwareClassificationControllerReconciler, ctx context.Context, Profilename string, matchedHosts []string, bmhobj bmh.BareMetalHostList) {
-	for _, validHost := range matchedHosts {
-		for i, host := range bmhobj.Items {
-			m := make(map[string]string)
-			m[Profilename] = "matches"
-			if validHost == host.Name {
-				availableLabels := bmhobj.Items[i].GetLabels()
-				fmt.Println("Already Available labels", availableLabels)
-				for key, label := range availableLabels {
-					m[key] = label
-				}
-				fmt.Println("Final labels to be applied", m)
-				bmhobj.Items[i].SetLabels(m)
-				err := r.Client.Update(ctx, &bmhobj.Items[i])
-				if err != nil {
-					fmt.Println("Label set Error", err)
-				} else {
-					fmt.Println("Labels updated successfully")
-
-				}
-			}
-		}
-	}
-}
-
-func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) ([]bmh.BareMetalHost, bmh.BareMetalHostList, error) {
+func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
 
 	bmhHostList := bmh.BareMetalHostList{}
-	var validHostList []bmh.BareMetalHost
-	hardwareClassification := &hwcc.HardwareClassificationController{}
 
 	opts := &client.ListOptions{
 		Namespace: namespace,
 	}
 
-	// Get list of BareMetalHost
+	// Get list of BareMetalHost from BMO
 	err := r.Client.List(ctx, &bmhHostList, opts)
 	if err != nil {
-		setError(hardwareClassification, "Failed to get BareMetalHost List")
-		return validHostList, bmhHostList, err
+		r.Log.Error(nil, "Unable to extract details", "error", err.Error())
+		return validHostList
 	}
 
 	// Get hosts in ready status from bmhHostList
 	for _, host := range bmhHostList.Items {
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
+			checkValidHost[host.ObjectMeta.Name] = true
 		}
 	}
 
-	return validHostList, bmhHostList, nil
+	return validHostList
 }
 
 func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
@@ -212,13 +186,49 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 	return extractedHardwareDetails, nil
 }
 
-// setError sets the ErrorMessage field on the HardwareClassificationController
-func setError(hwcc *hwcc.HardwareClassificationController, message string) {
-	hwcc.Status.ErrorMessage = pointer.StringPtr(message)
-}
-
+// SetupWithManager will add watches for this controller
 func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassificationController{}).
+		Watches(
+			&source.Kind{Type: &bmh.BareMetalHost{}},
+			&handler.EnqueueRequestsFromMapFunc{
+				ToRequests: handler.ToRequestsFunc(r.BareMetalHostToHardwareClassification),
+			},
+		).
 		Complete(r)
+}
+
+// BareMetalHostToHardwareClassification will return a reconcile request for a
+// HardwareClassification if the event is for a BareMetalHost.
+func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClassification(obj handler.MapObject) []ctrl.Request {
+	result := []ctrl.Request{}
+
+	if len(validHostList) == 0 {
+		validHostList = fetchBmhHostList(context.Background(), r, "metal3")
+	}
+
+	if host, ok := obj.Object.(*bmh.BareMetalHost); ok {
+
+		//name := client.ObjectKey{Namespace: "default", Name: "hardwareclassificationcontroller-sample"}
+
+		// If host found in validHostList and current provisioining state
+		// is not ready then remove host from validHostList. Else if host
+		// not found in validHostList and current provisioning state is ready
+		// then append it to validHostList.
+		if checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State != "ready" {
+			for i, validHost := range validHostList {
+				if validHost.ObjectMeta.Name == host.ObjectMeta.Name {
+					validHostList = append(validHostList[:i], validHostList[i+1:]...)
+					checkValidHost[validHost.ObjectMeta.Name] = false
+					result = append(result, ctrl.Request{NamespacedName: name})
+				}
+			}
+		} else if !checkValidHost[host.ObjectMeta.Name] && host.Status.Provisioning.State == "ready" {
+			validHostList = append(validHostList, *host)
+			checkValidHost[host.ObjectMeta.Name] = true
+			result = append(result, ctrl.Request{NamespacedName: name})
+		}
+	}
+	return result
 }
