@@ -62,11 +62,6 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
-	MinSped := extractedProfile.CPU.MinimumSpeed.AsDec()
-	spd := MinSped.UnscaledBig().Int64()
-	fmt.Println("-----------------------------------------")
-	fmt.Printf("Extracted expected hardware configuration successfully %+v", spd)
-	fmt.Println("-----------------------------------------")
 
 	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, validHostList)
 
@@ -84,7 +79,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
-		setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, validHostList)
+		setvalidLabel( ctx, r, hardwareClassification.ObjectMeta.Name, comparedHost, validHostList)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
@@ -93,19 +88,19 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 }
 
 // setvalidLabel will add "Profilename=matches" label to the hosts which matched ExpectedHardwareConfiguraton
-func setvalidLabel(r *HardwareClassificationControllerReconciler, ctx context.Context, Profilename string, matchedHosts []string, hostlist []bmh.BareMetalHost, ) {
-	for _, validHost := range matchedHosts{
-		for i, host := range hostlist{
+func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerReconciler , Profilename string, matchedHosts []string, hostlist []bmh.BareMetalHost) {
+	for _, validHost := range matchedHosts {
+		for i, host := range hostlist {
 			m := make(map[string]string)
 			m[Profilename] = "matches"
 			if validHost == host.Name {
 				// Getting all the existing labels on the matched host.
 				availableLabels := hostlist[i].GetLabels()
-				fmt.Printf("Already Available labels on %s = %s\n",validHost, availableLabels)
+				fmt.Printf("Already Available labels on %s = %s\n", validHost, availableLabels)
 				for key, label := range availableLabels {
 					m[key] = label
 				}
-				fmt.Printf("Final labels to be applied on %s = %s\n",validHost, m)
+				fmt.Printf("Final labels to be applied on %s = %s\n", validHost, m)
 				// Setting all existing and new labels on the matched host.
 				hostlist[i].SetLabels(m)
 				err := r.Client.Update(ctx, &hostlist[i])
@@ -168,6 +163,7 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 					float32(extractedProfile.CPU.MaximumSpeed.Value()) > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
+
 					err = errors.New("enter valid CPU Count")
 					break
 				}
@@ -260,4 +256,3 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
-
