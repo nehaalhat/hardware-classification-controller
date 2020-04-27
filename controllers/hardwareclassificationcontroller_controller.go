@@ -84,12 +84,40 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
-		// setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, bmhobj)
+		setvalidLabel(r, ctx, hardwareClassification.ObjectMeta.Name, comparedHost, validHostList)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// setvalidLabel will add "Profilename=matches" label to the hosts which matched ExpectedHardwareConfiguraton
+func setvalidLabel(r *HardwareClassificationControllerReconciler, ctx context.Context, Profilename string, matchedHosts []string, hostlist []bmh.BareMetalHost, ) {
+	for _, validHost := range matchedHosts{
+		for i, host := range hostlist{
+			m := make(map[string]string)
+			m[Profilename] = "matches"
+			if validHost == host.Name {
+				// Getting all the existing labels on the matched host.
+				availableLabels := hostlist[i].GetLabels()
+				fmt.Printf("Already Available labels on %s = %s\n",validHost, availableLabels)
+				for key, label := range availableLabels {
+					m[key] = label
+				}
+				fmt.Printf("Final labels to be applied on %s = %s\n",validHost, m)
+				// Setting all existing and new labels on the matched host.
+				hostlist[i].SetLabels(m)
+				err := r.Client.Update(ctx, &hostlist[i])
+				if err != nil {
+					fmt.Println("Failed to set labels", err)
+				} else {
+					fmt.Println("Labels updated successfully")
+
+				}
+			}
+		}
+	}
 }
 
 func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
@@ -232,3 +260,4 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
+
