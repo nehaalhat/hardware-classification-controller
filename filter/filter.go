@@ -130,9 +130,10 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 	}
 
-	if expectedCPU.MaximumSpeed != (resource.Quantity{}) || expectedCPU.MinimumSpeed != (resource.Quantity{}) {
+	if expectedCPU.MaximumSpeed != (resource.Quantity{}) && expectedCPU.MinimumSpeed != (resource.Quantity{}) {
 		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
 		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		fmt.Println("Extracted CPU Speed", MinSpeed, MaxSpeed)
 		if MinSpeed > 0 && MaxSpeed > 0 {
 			if MinSpeed > cpu.ClockSpeed && MaxSpeed < cpu.ClockSpeed {
 				return false
@@ -141,12 +142,14 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		}
 	} else if expectedCPU.MaximumSpeed != (resource.Quantity{}) {
 		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		fmt.Println("Extracted CPU Speed", MaxSpeed)
 		if MaxSpeed < cpu.ClockSpeed {
 			return false
 		}
 
 	} else if expectedCPU.MinimumSpeed != (resource.Quantity{}) {
 		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		fmt.Println("Extracted CPU Speed", MinSpeed)
 		if MinSpeed > cpu.ClockSpeed {
 			return false
 		}
