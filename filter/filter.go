@@ -184,7 +184,7 @@ func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 	if expectedDisk.MaximumCount > 0 && expectedDisk.MinimumCount > 0 {
 		fmt.Println("Provided Minimum count for Disk", expectedDisk.MinimumCount, " and fetched count ", storage.Count)
 		fmt.Println("Provided Maximum count for Disk", expectedDisk.MaximumCount, " and fetched count ", storage.Count)
-		if expectedDisk.MaximumCount <= storage.Count && expectedDisk.MinimumCount <= storage.Count {
+		if expectedDisk.MaximumCount >= storage.Count && expectedDisk.MinimumCount <= storage.Count {
 			for _, disk := range storage.Disk {
 				fmt.Println("Provided Minimum Size for Disk", expectedDisk.MinimumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				fmt.Println("Provided Maximum Size for Disk", expectedDisk.MaximumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
@@ -198,7 +198,7 @@ func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 		}
 	} else if expectedDisk.MaximumCount > 0 {
 		fmt.Println("Provided Maximum count for Disk", expectedDisk.MaximumCount, " and fetched count ", storage.Count)
-		if expectedDisk.MaximumCount <= storage.Count {
+		if expectedDisk.MaximumCount >= storage.Count {
 			for _, disk := range storage.Disk {
 				fmt.Println("Provided Maximum Size for Disk", expectedDisk.MaximumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				if expectedDisk.MaximumIndividualSizeGB < disk.SizeGb {
