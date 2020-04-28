@@ -106,7 +106,7 @@ func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
 	if (expectedRAM.MaximumSizeGB > 0) && (expectedRAM.MinimumSizeGB > 0) {
 		fmt.Println("Provided Minimum Size for RAM", expectedRAM.MinimumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		fmt.Println("Provided Maximum Size for RAM", expectedRAM.MaximumSizeGB, " and fetched SIZE ", ram.RAMGb)
-		if expectedRAM.MinimumSizeGB > ram.RAMGb || expectedRAM.MaximumSizeGB < ram.RAMGb {
+		if (expectedRAM.MinimumSizeGB > ram.RAMGb) || (expectedRAM.MaximumSizeGB < ram.RAMGb) {
 			fmt.Println("RAM MINMAX SIZE did not match")
 			return false
 		}
@@ -163,7 +163,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		fmt.Println("Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		fmt.Println("Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MinSpeed > 0 && MaxSpeed > 0 {
-			if MinSpeed > cpu.ClockSpeed || MaxSpeed < cpu.ClockSpeed {
+			if (MinSpeed > cpu.ClockSpeed) || (MaxSpeed < cpu.ClockSpeed) {
 				fmt.Println("CPU MINMAX ClockSpeed did not match")
 				return false
 			}
@@ -193,14 +193,14 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 	fmt.Printf("\n")
-	if expectedDisk.MaximumCount > 0 && expectedDisk.MinimumCount > 0 {
+	if (expectedDisk.MaximumCount > 0) && (expectedDisk.MinimumCount > 0) {
 		fmt.Println("Provided Minimum count for Disk", expectedDisk.MinimumCount, " and fetched count ", storage.Count)
 		fmt.Println("Provided Maximum count for Disk", expectedDisk.MaximumCount, " and fetched count ", storage.Count)
-		if expectedDisk.MaximumCount >= storage.Count || expectedDisk.MinimumCount <= storage.Count {
+		if (expectedDisk.MaximumCount >= storage.Count) && (expectedDisk.MinimumCount <= storage.Count) {
 			for _, disk := range storage.Disk {
 				fmt.Println("Provided Minimum Size for Disk", expectedDisk.MinimumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				fmt.Println("Provided Maximum Size for Disk", expectedDisk.MaximumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
-				if expectedDisk.MaximumIndividualSizeGB < disk.SizeGb || expectedDisk.MinimumIndividualSizeGB > disk.SizeGb {
+				if (expectedDisk.MaximumIndividualSizeGB < disk.SizeGb) || (expectedDisk.MinimumIndividualSizeGB > disk.SizeGb) {
 					fmt.Println("Disk MINMAX SIZE did not match")
 					return false
 				}
