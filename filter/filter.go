@@ -11,6 +11,8 @@ import (
 // MinMaxComparison it will compare the minimum and maximum comparison based on the value provided by the user and check for the valid host
 func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) []string {
 
+	fmt.Println("Extracted HWDetails", expectedHardwareprofile)
+	fmt.Printf("\n\n\n")
 	var comparedHost []string
 
 	for hostname, details := range validatedHost {
@@ -59,8 +61,12 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 		if isHostValid {
 			comparedHost = append(comparedHost, hostname)
 			fmt.Println(hostname, " Matches profile ", ProfileName)
+			fmt.Printf("\n\n\n")
+
 		} else {
 			fmt.Println(hostname, " Does not matches profile ", ProfileName)
+			fmt.Printf("\n\n\n")
+
 		}
 
 	}
@@ -70,6 +76,7 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 }
 
 func checkNICS(nics valTypes.NIC, expectedNIC hwcc.NIC) bool {
+	fmt.Printf("\n")
 	if expectedNIC.MaximumCount > 0 && expectedNIC.MinimumCount > 0 {
 		fmt.Println("Provided Minimum Count for NICS", expectedNIC.MinimumCount, " and fetched count ", nics.Count)
 		fmt.Println("Provided Maximum count for NICS", expectedNIC.MaximumCount, " and fetched count ", nics.Count)
@@ -93,6 +100,7 @@ func checkNICS(nics valTypes.NIC, expectedNIC hwcc.NIC) bool {
 }
 
 func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
+	fmt.Printf("\n")
 	if expectedRAM.MaximumSizeGB > 0 && expectedRAM.MinimumSizeGB > 0 {
 		fmt.Println("Provided Minimum Size for RAM", expectedRAM.MinimumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		fmt.Println("Provided Maximum Size for RAM", expectedRAM.MaximumSizeGB, " and fetched SIZE ", ram.RAMGb)
@@ -116,6 +124,8 @@ func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
 }
 
 func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
+
+	fmt.Printf("\n")
 
 	if expectedCPU.MaximumCount > 0 && expectedCPU.MinimumCount > 0 {
 		fmt.Println("Provided Minimum count for CPU", expectedCPU.MinimumCount, " and fetched count ", cpu.Count)
@@ -171,6 +181,8 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 }
 
 func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
+	fmt.Printf("\n")
+	fmt.Println("Extracted Storage details", expectedDisk)
 
 	if expectedDisk.MaximumCount > 0 && expectedDisk.MinimumCount > 0 {
 		fmt.Println("Provided Minimum count for Disk", expectedDisk.MinimumCount, " and fetched count ", storage.Count)

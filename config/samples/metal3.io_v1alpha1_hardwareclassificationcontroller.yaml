@@ -11,7 +11,7 @@ spec:
         minimumSpeed: "2.7"
       Disk:
         minimumCount: 2
-        minimumIndividualSize: 2200
+        minimumIndividualSizeGB: 2200
       RAM:
         minimumSizeGB: 6        
       NIC:

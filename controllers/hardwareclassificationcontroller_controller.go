@@ -63,6 +63,9 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	extractedlabels := hardwareClassification.ObjectMeta.Labels
+	fmt.Println("-----------------------------------------")
+	fmt.Printf("Extracted Profile %+v", extractedProfile)
+	fmt.Println("-----------------------------------------")
 
 	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, validHostList)
 
@@ -80,7 +83,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
-		setvalidLabel( ctx, r, hardwareClassification.ObjectMeta.Name, comparedHost, extractedlabels)
+		setvalidLabel(ctx, r, hardwareClassification.ObjectMeta.Name, comparedHost, extractedlabels)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
@@ -102,7 +105,7 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 		fmt.Println("Got updated host list for labels")
 	}
 
-	labelkey := "hardwareclassification.metal3.io/"+Profilename
+	labelkey := "hardwareclassification.metal3.io/" + Profilename
 
 	//If extracted labels are empty then assign value matches
 
@@ -110,14 +113,14 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 		for i, host := range bmhHostList.Items {
 			m := make(map[string]string)
 			if extractedlabels != nil {
-				for _, value := range extractedlabels{
-					if value == ""{
+				for _, value := range extractedlabels {
+					if value == "" {
 						m[labelkey] = "matches"
-					}else  {
+					} else {
 						m[labelkey] = value
 					}
 				}
-			}else {
+			} else {
 				m[labelkey] = "matches"
 			}
 			if validHost == host.Name {
@@ -283,4 +286,3 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
-
