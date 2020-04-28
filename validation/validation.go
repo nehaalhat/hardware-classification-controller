@@ -1,7 +1,6 @@
 package vallidation
 
 import (
-	"fmt"
 	valTypes "hardware-classification-controller/validation/validationModel"
 	"net"
 
@@ -16,10 +15,7 @@ func CheckValidIP(NICIp string) bool {
 
 //ConvertBytesToGb it converts the Byte into GB
 func ConvertBytesToGb(inBytes int64) int64 {
-	fmt.Println("Passed for conversion", inBytes)
-
 	inGb := (inBytes / 1024 / 1024 / 1024)
-	fmt.Println("converted", inGb)
 	return inGb
 }
 
@@ -74,8 +70,6 @@ func Validation(hostDetails map[string]map[string]interface{}) map[string]map[st
 				for _, disk := range storage {
 					disks = append(disks, valTypes.Disk{Name: disk.Name, SizeGb: ConvertBytesToGb(int64(disk.SizeBytes))})
 				}
-
-				fmt.Println("**********validated Size of disk", disks)
 
 				validStorage := valTypes.Storage{
 					Count: len(disks),

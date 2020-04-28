@@ -11,7 +11,6 @@ import (
 // MinMaxComparison it will compare the minimum and maximum comparison based on the value provided by the user and check for the valid host
 func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.ExpectedHardwareConfiguration) []string {
 
-	fmt.Println("Extracted HWDetails", expectedHardwareprofile)
 	fmt.Printf("\n\n\n")
 	var comparedHost []string
 
@@ -182,8 +181,6 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 	fmt.Printf("\n")
-	fmt.Println("Extracted Storage details", expectedDisk)
-
 	if expectedDisk.MaximumCount > 0 && expectedDisk.MinimumCount > 0 {
 		fmt.Println("Provided Minimum count for Disk", expectedDisk.MinimumCount, " and fetched count ", storage.Count)
 		fmt.Println("Provided Maximum count for Disk", expectedDisk.MaximumCount, " and fetched count ", storage.Count)
