@@ -80,17 +80,20 @@ func checkNICS(nics valTypes.NIC, expectedNIC hwcc.NIC) bool {
 		fmt.Println("Provided Minimum Count for NICS", expectedNIC.MinimumCount, " and fetched count ", nics.Count)
 		fmt.Println("Provided Maximum count for NICS", expectedNIC.MaximumCount, " and fetched count ", nics.Count)
 		if expectedNIC.MinimumCount > nics.Count && expectedNIC.MaximumCount < nics.Count {
+			fmt.Println("NICS MINMAX count did not match")
 			return false
 		}
 	} else if expectedNIC.MaximumCount > 0 {
 		fmt.Println("Provided Maximum count for NICS", expectedNIC.MaximumCount, " and fetched count ", nics.Count)
 		if expectedNIC.MaximumCount < nics.Count {
+			fmt.Println("NICS MAX count did not match")
 			return false
 		}
 
 	} else if expectedNIC.MinimumCount > 0 {
 		fmt.Println("Provided Minimum Count for NICS", expectedNIC.MinimumCount, " and fetched count ", nics.Count)
 		if expectedNIC.MinimumCount > nics.Count {
+			fmt.Println("NICS MIN count did not match")
 			return false
 		}
 
@@ -104,17 +107,20 @@ func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
 		fmt.Println("Provided Minimum Size for RAM", expectedRAM.MinimumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		fmt.Println("Provided Maximum Size for RAM", expectedRAM.MaximumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		if expectedRAM.MinimumSizeGB > ram.RAMGb && expectedRAM.MaximumSizeGB < ram.RAMGb {
+			fmt.Println("RAM MINMAX SIZE did not match")
 			return false
 		}
 	} else if expectedRAM.MaximumSizeGB > 0 {
 		fmt.Println("Provided Maximum Size for RAM", expectedRAM.MaximumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		if expectedRAM.MaximumSizeGB < ram.RAMGb {
+			fmt.Println("RAM MAX SIZE did not match")
 			return false
 		}
 
 	} else if expectedRAM.MinimumSizeGB > 0 {
 		fmt.Println("Provided Minimum Size for RAM", expectedRAM.MinimumSizeGB, " and fetched SIZE ", ram.RAMGb)
 		if expectedRAM.MinimumSizeGB > ram.RAMGb {
+			fmt.Println("RAM MIN SIZE did not match")
 			return false
 		}
 
@@ -130,18 +136,21 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		fmt.Println("Provided Minimum count for CPU", expectedCPU.MinimumCount, " and fetched count ", cpu.Count)
 		fmt.Println("Provided Maximum count for CPU", expectedCPU.MaximumCount, " and fetched count ", cpu.Count)
 		if expectedCPU.MinimumCount > cpu.Count && expectedCPU.MaximumCount < cpu.Count {
+			fmt.Println("CPU MINMAX COUNT did not match")
 			return false
 		}
 
 	} else if expectedCPU.MaximumCount > 0 {
 		fmt.Println("Provided Maximum count for CPU", expectedCPU.MaximumCount, " and fetched count ", cpu.Count)
 		if expectedCPU.MaximumCount < cpu.Count {
+			fmt.Println("CPU MAX COUNT did not match")
 			return false
 		}
 
 	} else if expectedCPU.MinimumCount > 0 {
 		fmt.Println("Provided Minimum count for CPU", expectedCPU.MinimumCount, " and fetched count ", cpu.Count)
 		if expectedCPU.MinimumCount > cpu.Count {
+			fmt.Println("CPU MIN COUNT did not match")
 			return false
 		}
 
@@ -155,6 +164,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		fmt.Println("Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MinSpeed > 0 && MaxSpeed > 0 {
 			if MinSpeed > cpu.ClockSpeed && MaxSpeed < cpu.ClockSpeed {
+				fmt.Println("CPU MINMAX ClockSpeed did not match")
 				return false
 			}
 
@@ -163,6 +173,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
 		fmt.Println("Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MaxSpeed < cpu.ClockSpeed {
+			fmt.Println("CPU MAX ClockSpeed did not match")
 			return false
 		}
 
@@ -170,6 +181,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
 		fmt.Println("Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MinSpeed > cpu.ClockSpeed {
+			fmt.Println("CPU MIN ClockSpeed did not match")
 			return false
 		}
 
@@ -189,11 +201,13 @@ func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 				fmt.Println("Provided Minimum Size for Disk", expectedDisk.MinimumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				fmt.Println("Provided Maximum Size for Disk", expectedDisk.MaximumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				if expectedDisk.MaximumIndividualSizeGB < disk.SizeGb && expectedDisk.MinimumIndividualSizeGB > disk.SizeGb {
+					fmt.Println("Disk MINMAX SIZE did not match")
 					return false
 				}
 			}
 
 		} else {
+			fmt.Println("Disk MINMAX Count did not match")
 			return false
 		}
 	} else if expectedDisk.MaximumCount > 0 {
@@ -202,10 +216,12 @@ func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 			for _, disk := range storage.Disk {
 				fmt.Println("Provided Maximum Size for Disk", expectedDisk.MaximumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				if expectedDisk.MaximumIndividualSizeGB < disk.SizeGb {
+					fmt.Println("Disk MAX SIZE did not match")
 					return false
 				}
 			}
 		} else {
+			fmt.Println("Disk MAX Count did not match")
 			return false
 		}
 	} else if expectedDisk.MinimumCount > 0 {
@@ -214,10 +230,12 @@ func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 			for _, disk := range storage.Disk {
 				fmt.Println("Provided Minimum Size for Disk", expectedDisk.MinimumIndividualSizeGB, " and fetched Size ", disk.SizeGb)
 				if expectedDisk.MinimumIndividualSizeGB > disk.SizeGb {
+					fmt.Println("Disk MIN SIZE did not match")
 					return false
 				}
 			}
 		} else {
+			fmt.Println("Disk MIN Count did not match")
 			return false
 		}
 	}
