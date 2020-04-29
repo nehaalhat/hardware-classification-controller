@@ -2,6 +2,8 @@ apiVersion: metal3.io.sigs.k8s.io/v1alpha1
 kind: HardwareClassificationController
 metadata:
   name: hardwareclassificationcontroller-sample
+  labels:
+    test: pass
 spec:
   expectedValidationConfiguration:
       namespace: metal3
