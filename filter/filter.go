@@ -74,6 +74,7 @@ func MinMaxComparison(ProfileName string, validatedHost map[string]map[string]in
 
 }
 
+//checkNICS this function checks the nics details for both min and max parameters
 func checkNICS(nics valTypes.NIC, expectedNIC hwcc.NIC) bool {
 	fmt.Printf("\n")
 	if (expectedNIC.MaximumCount > 0) && (expectedNIC.MinimumCount > 0) {
@@ -101,6 +102,7 @@ func checkNICS(nics valTypes.NIC, expectedNIC hwcc.NIC) bool {
 	return true
 }
 
+//checkRAM this function checks the ram details for both min and max parameters
 func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
 	fmt.Printf("\n")
 	if (expectedRAM.MaximumSizeGB > 0) && (expectedRAM.MinimumSizeGB > 0) {
@@ -128,6 +130,7 @@ func checkRAM(ram valTypes.RAM, expectedRAM hwcc.RAM) bool {
 	return true
 }
 
+//checkCPUCount this function checks the CPU details for both min and max parameters
 func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 	fmt.Printf("\n")
@@ -191,6 +194,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 }
 
+//retriveClockSpeed this function checks the Speed details whether provided speed is decimal or int
 func retriveClockSpeed(providedSpeed float64) float64 {
 	if providedSpeed > 10 {
 		return providedSpeed / 10
@@ -199,6 +203,7 @@ func retriveClockSpeed(providedSpeed float64) float64 {
 	return providedSpeed
 }
 
+//checkDiskDetailsl this function checks the Disk details for both min and max parameters
 func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {
 	fmt.Printf("\n")
 	if (expectedDisk.MaximumCount > 0) && (expectedDisk.MinimumCount > 0) {

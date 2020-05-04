@@ -105,7 +105,7 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 	}
 
 	labelkey := "hardwareclassification.metal3.io/" + Profilename
-	
+
 	for _, validHost := range matchedHosts {
 		for i, host := range bmhHostList.Items {
 			m := make(map[string]string)
@@ -142,6 +142,7 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 	}
 }
 
+//fetchBmhHostList this function will return the latest baremetal host list which are in the ready state
 func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerReconciler, namespace string) []bmh.BareMetalHost {
 
 	bmhHostList := bmh.BareMetalHostList{}
@@ -168,6 +169,7 @@ func fetchBmhHostList(ctx context.Context, r *HardwareClassificationControllerRe
 	return validHostList
 }
 
+//extractHardwareDetails this function will get the hardware profile details provided by the user in the yaml file
 func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 	bmhList []bmh.BareMetalHost) (map[string]map[string]interface{}, error) {
 
@@ -293,4 +295,3 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
-
