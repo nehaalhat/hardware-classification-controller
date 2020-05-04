@@ -54,6 +54,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 	name = req.NamespacedName
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassificationController{}
+	//hardwareClassification.ObjectMeta.DeletionTimeStamp.
 	if err := r.Client.Get(ctx, req.NamespacedName, hardwareClassification); err != nil {
 		if apierrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
@@ -63,10 +64,7 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
-	extractedlabels := hardwareClassification.ObjectMeta.Labels
-	fmt.Println("-----------------------------------------")
-	fmt.Printf("Extracted Profile %+v", extractedProfile)
-	fmt.Println("-----------------------------------------")
+	extractedLabels := hardwareClassification.ObjectMeta.Labels
 
 	extractedHardwareDetails, err := extractHardwareDetails(extractedProfile, validHostList)
 
@@ -84,11 +82,11 @@ func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request)
 		fmt.Println(validatedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		fmt.Println("List of Comapred Host", comparedHost)
-		setvalidLabel(ctx, r, hardwareClassification.ObjectMeta.Name, comparedHost, extractedlabels)
+		setvalidLabel(ctx, r, hardwareClassification.ObjectMeta.Name, comparedHost, extractedLabels)
 	} else {
 		fmt.Println("Provided configurations are not valid")
 	}
-
+	hardwareClassification = &hwcc.HardwareClassificationController{}
 	return ctrl.Result{}, nil
 }
 
@@ -107,29 +105,27 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 	}
 
 	labelkey := "hardwareclassification.metal3.io/" + Profilename
-
-	//If extracted labels are empty then assign value matches
-
+	
 	for _, validHost := range matchedHosts {
 		for i, host := range bmhHostList.Items {
 			m := make(map[string]string)
-			if extractedlabels != nil {
-				for _, value := range extractedlabels {
-					if value == "" {
-						m[labelkey] = "matches"
-					} else {
-						m[labelkey] = value
-					}
-				}
-			} else {
-				m[labelkey] = "matches"
-			}
 			if validHost == host.Name {
 				// Getting all the existing labels on the matched host.
 				availableLabels := bmhHostList.Items[i].GetLabels()
 				fmt.Printf("Already Available labels on %s = %s\n", validHost, availableLabels)
 				for key, label := range availableLabels {
 					m[key] = label
+				}
+				if extractedlabels != nil {
+					for _, value := range extractedlabels {
+						if value == "" {
+							m[labelkey] = "matches"
+						} else {
+							m[labelkey] = value
+						}
+					}
+				} else {
+					m[labelkey] = "matches"
 				}
 				fmt.Printf("Final labels to be applied on %s = %s\n", validHost, m)
 				// Setting all existing and new labels on the matched host.
@@ -297,3 +293,4 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
+
