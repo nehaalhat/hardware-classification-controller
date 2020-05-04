@@ -4,6 +4,7 @@ import (
 	"fmt"
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	valTypes "hardware-classification-controller/validation/validationModel"
+	"math"
 
 	"k8s.io/apimachinery/pkg/api/resource"
 )
@@ -157,8 +158,8 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 	}
 
 	if expectedCPU.MaximumSpeed != (resource.Quantity{}) && expectedCPU.MinimumSpeed != (resource.Quantity{}) {
-		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
-		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		MinSpeed := retriveClockSpeed(float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()))
+		MaxSpeed := retriveClockSpeed(float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()))
 
 		fmt.Println("Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		fmt.Println("Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
@@ -170,7 +171,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 		}
 	} else if expectedCPU.MaximumSpeed != (resource.Quantity{}) {
-		MaxSpeed := float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		MaxSpeed := retriveClockSpeed(float64(expectedCPU.MaximumSpeed.AsDec().UnscaledBig().Int64()))
 		fmt.Println("Provided Maximum ClockSpeed for CPU", MaxSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MaxSpeed < cpu.ClockSpeed {
 			fmt.Println("CPU MAX ClockSpeed did not match")
@@ -178,7 +179,7 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 		}
 
 	} else if expectedCPU.MinimumSpeed != (resource.Quantity{}) {
-		MinSpeed := float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) / 10
+		MinSpeed := retriveClockSpeed(float64(expectedCPU.MinimumSpeed.AsDec().UnscaledBig().Int64()))
 		fmt.Println("Provided Minimum ClockSpeed for CPU", MinSpeed, " and fetched ClockSpeed ", cpu.ClockSpeed)
 		if MinSpeed > cpu.ClockSpeed {
 			fmt.Println("CPU MIN ClockSpeed did not match")
@@ -189,6 +190,14 @@ func checkCPUCount(cpu valTypes.CPU, expectedCPU hwcc.CPU) bool {
 
 	return true
 
+}
+
+func retriveClockSpeed(providedSpeed float64) float64 {
+	if providedSpeed == math.Trunc(providedSpeed) {
+		return providedSpeed
+	}
+
+	return providedSpeed / 10
 }
 
 func checkDiskDetailsl(storage valTypes.Storage, expectedDisk hwcc.Disk) bool {

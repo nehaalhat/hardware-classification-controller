@@ -28,6 +28,7 @@ import (
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -193,10 +194,20 @@ func extractHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
 					float32(extractedProfile.CPU.MaximumSpeed.Value()) > 0 {
 					introspectionDetails["CPU"] = host.Status.HardwareDetails.CPU
 				} else {
-
 					err = errors.New("enter valid CPU Count")
 					break
 				}
+
+				if extractedProfile.CPU.MaximumSpeed != (resource.Quantity{}) && extractedProfile.CPU.MinimumSpeed != (resource.Quantity{}) {
+					if float64(extractedProfile.CPU.MaximumSpeed.AsDec().UnscaledBig().Int64()) > 0 ||
+						float64(extractedProfile.CPU.MinimumSpeed.AsDec().UnscaledBig().Int64()) > 0 {
+
+					} else {
+						err = errors.New("enter valid CPU ClockSpeed")
+						break
+					}
+				}
+
 			}
 
 			if extractedProfile.Disk != (hwcc.Disk{}) {
