@@ -106,6 +106,26 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 
 	labelkey := "hardwareclassification.metal3.io/" + Profilename
 
+	// Delete existing labels with same profile.
+	for i, _ := range bmhHostList.Items {
+		existinglabels := bmhHostList.Items[i].GetLabels()
+		for key, _ := range existinglabels {
+			if key == labelkey{
+				delete(existinglabels, key)
+			}
+		}
+		bmhHostList.Items[i].SetLabels(existinglabels)
+		err = r.Client.Update(ctx, &bmhHostList.Items[i])
+		if err != nil {
+			fmt.Println("Failed to set labels", err)
+		} else {
+			fmt.Println("Labels updated successfully")
+
+		}
+
+	}
+
+	// attach latest labels
 	for _, validHost := range matchedHosts {
 		for i, host := range bmhHostList.Items {
 			m := make(map[string]string)
@@ -113,8 +133,8 @@ func setvalidLabel(ctx context.Context, r *HardwareClassificationControllerRecon
 				// Getting all the existing labels on the matched host.
 				availableLabels := bmhHostList.Items[i].GetLabels()
 				fmt.Printf("Already Available labels on %s = %s\n", validHost, availableLabels)
-				for key, label := range availableLabels {
-					m[key] = label
+				for key, value := range availableLabels{
+					m[key] = value
 				}
 				if extractedlabels != nil {
 					for _, value := range extractedlabels {
@@ -295,3 +315,4 @@ func (r *HardwareClassificationControllerReconciler) BareMetalHostToHardwareClas
 	}
 	return result
 }
+
