@@ -54,7 +54,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&watchNamespace, "namespace", "",
-                "Namespace that the controller watches to reconcile HWCC objects. If unspecified, the controller watches for HWCC objects across all namespaces.")
+		"Namespace that the controller watches to reconcile HWCC objects. If unspecified, the controller watches for HWCC objects across all namespaces.")
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(func(o *zap.Options) {

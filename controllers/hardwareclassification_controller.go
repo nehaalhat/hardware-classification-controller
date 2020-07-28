@@ -17,6 +17,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
@@ -92,11 +93,18 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	//Fetch baremetal host list for the given namespace
-	hostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	hostList, failedHostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
 	if err != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
 		hcReconciler.Log.Error(err, err.Error())
 		return ctrl.Result{}, nil
+	}
+
+	if len(failedHostList) > 0 {
+		failedError := hcManager.LabelFailedHost(ctx, hardwareClassification.ObjectMeta, failedHostList)
+		if len(failedError) > 0 {
+			fmt.Println(failedError)
+		}
 	}
 
 	if len(hostList) == 0 {

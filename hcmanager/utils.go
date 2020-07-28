@@ -18,16 +18,20 @@ package hcmanager
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	//LabelName initial name to the label key as hardware classification group
 	LabelName = "hardwareclassification.metal3.io/"
+	//FailedLabelName initial name to the label key as hardware classification group
+	FailedLabelName = "failhardwareclassification.metal3.io/"
 	//Status extract the baremetal host for status ready
 	Status = "ready"
 	//DefaultLabel if label is missing from the Extracted Hardware Profile
@@ -43,25 +47,31 @@ const (
 )
 
 //FetchBmhHostList this function will fetch and return baremetal hosts in ready state
-func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]bmh.BareMetalHost, bmh.BareMetalHostList, error) {
+func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]bmh.BareMetalHost, []bmh.BareMetalHost, bmh.BareMetalHostList, error) {
 	ctx := context.Background()
 	bmhHostList := bmh.BareMetalHostList{}
 	var validHostList []bmh.BareMetalHost
+	var failedHostList []bmh.BareMetalHost
 	opts := &client.ListOptions{
 		Namespace: Namespace,
 	}
 	// Get list of BareMetalHost from BMO
 	err := mgr.client.List(ctx, &bmhHostList, opts)
 	if err != nil {
-		return validHostList, bmhHostList, errors.New(err.Error())
+		return validHostList, failedHostList, bmhHostList, errors.New(err.Error())
 	}
 	// Get hosts in ready status from bmhHostList
 	for _, host := range bmhHostList.Items {
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
+		} else if host.Status.Provisioning.State == "error" {
+			fmt.Println("************Non - Ready Host***********")
+			fmt.Println("**********Host Details", host)
+			fmt.Println("**********Host State", host.Status.Provisioning.State)
+			failedHostList = append(failedHostList, host)
 		}
 	}
-	return validHostList, bmhHostList, nil
+	return validHostList, failedHostList, bmhHostList, nil
 }
 
 //CheckValidIP uses net package to check if the IP is valid or not

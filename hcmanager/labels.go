@@ -17,6 +17,7 @@ package hcmanager
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -100,4 +101,30 @@ func getHostName(hostName string, validHosts []string) bool {
 		}
 	}
 	return false
+}
+
+// LabelFailedHost set label of baremetal host
+func (mgr HardwareClassificationManager) LabelFailedHost(ctx context.Context,
+	hcMetaData v1.ObjectMeta, failedHosts []bmh.BareMetalHost) []string {
+	labelKey := FailedLabelName + hcMetaData.Name
+	var updateLabelError []string
+	for _, host := range failedHosts {
+		labels := host.GetLabels()
+		if labels == nil {
+			labels = make(map[string]string)
+		}
+
+		fmt.Println("Error Message of failed node ***********", host.Status.ErrorMessage)
+		// Update user provided labels else set default label
+		labels[labelKey] = host.Status.ErrorMessage
+
+		mgr.Log.Info("Set Label", "BareMetalHost", host.Name)
+		// set updated labels to host
+		host.SetLabels(labels)
+		if err := mgr.client.Update(ctx, &host); err != nil {
+			updateLabelError = append(updateLabelError, host.Name+" "+err.Error())
+		}
+	}
+
+	return updateLabelError
 }
