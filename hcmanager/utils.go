@@ -18,7 +18,6 @@ package hcmanager
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
@@ -65,9 +64,6 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]b
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
 		} else if host.Status.ErrorMessage != "" {
-			fmt.Println("************Non - Ready Host***********")
-			fmt.Println("**********Host Details", host)
-			fmt.Println("**********Host State", host.Status.Provisioning.State)
 			failedHostList = append(failedHostList, host)
 		}
 	}
