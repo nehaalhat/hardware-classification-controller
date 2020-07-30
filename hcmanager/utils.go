@@ -64,7 +64,7 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]b
 	for _, host := range bmhHostList.Items {
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
-		} else if host.Status.Provisioning.State == "error" {
+		} else if host.Status.ErrorMessage != "" {
 			fmt.Println("************Non - Ready Host***********")
 			fmt.Println("**********Host Details", host)
 			fmt.Println("**********Host State", host.Status.Provisioning.State)
