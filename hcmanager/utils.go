@@ -19,10 +19,12 @@ import (
 	"context"
 	"errors"
 	"net"
+	"strings"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -46,13 +48,13 @@ const (
 )
 
 //FetchBmhHostList this function will fetch and return baremetal hosts in ready state
-func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]bmh.BareMetalHost, []bmh.BareMetalHost, bmh.BareMetalHostList, error) {
+func (mgr HardwareClassificationManager) FetchBmhHostList(hcMetaData v1.ObjectMeta) ([]bmh.BareMetalHost, []bmh.BareMetalHost, bmh.BareMetalHostList, error) {
 	ctx := context.Background()
 	bmhHostList := bmh.BareMetalHostList{}
 	var validHostList []bmh.BareMetalHost
 	var failedHostList []bmh.BareMetalHost
 	opts := &client.ListOptions{
-		Namespace: Namespace,
+		Namespace: hcMetaData.Namespace,
 	}
 	// Get list of BareMetalHost from BMO
 	err := mgr.client.List(ctx, &bmhHostList, opts)
@@ -63,8 +65,12 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]b
 	for _, host := range bmhHostList.Items {
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
-		} else if host.Status.ErrorMessage != "" {
-			failedHostList = append(failedHostList, host)
+		} else {
+			if hcMetaData.Labels["hardwareclassification-error"] == "All" {
+				failedHostList = append(failedHostList, host)
+			} else if strings.Contains(hcMetaData.Labels["hardwareclassification-error"], string(host.Status.Provisioning.State)) {
+				failedHostList = append(failedHostList, host)
+			}
 		}
 	}
 	return validHostList, failedHostList, bmhHostList, nil

@@ -35,7 +35,7 @@ type HardwareClassificationManager struct {
 
 // HardwareClassificationInterface important function used in reconciler
 type HardwareClassificationInterface interface {
-	FetchBmhHostList(namespace string) ([]bmh.BareMetalHost, []bmh.BareMetalHost, bmh.BareMetalHostList, error)
+	FetchBmhHostList(hcMetaData v1.ObjectMeta) ([]bmh.BareMetalHost, []bmh.BareMetalHost, bmh.BareMetalHostList, error)
 	ExtractAndValidateHardwareDetails(hwcc.HardwareCharacteristics, []bmh.BareMetalHost) []bmh.HardwareDetails
 	ValidateExtractedHardwareProfile(hwcc.HardwareCharacteristics) error
 	MinMaxFilter(ProfileName string, HostList []bmh.HardwareDetails, expectedHardwareprofile hwcc.HardwareCharacteristics) []string

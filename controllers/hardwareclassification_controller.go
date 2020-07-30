@@ -93,7 +93,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	//Fetch baremetal host list for the given namespace
-	hostList, failedHostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	hostList, failedHostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta)
 	if err != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
 		hcReconciler.Log.Error(err, err.Error())
