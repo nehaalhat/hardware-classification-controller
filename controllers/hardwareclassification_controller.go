@@ -100,10 +100,12 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		return ctrl.Result{}, nil
 	}
 
-	if len(failedHostList) > 0 {
-		failedError := hcManager.LabelFailedHost(ctx, hardwareClassification.ObjectMeta, failedHostList)
-		if len(failedError) > 0 {
-			fmt.Println(failedError)
+	if _, ok := hardwareClassification.ObjectMeta.Labels["hardwareclassification-error"]; ok {
+		if len(failedHostList) > 0 {
+			failedError := hcManager.LabelFailedHost(ctx, hardwareClassification.ObjectMeta, failedHostList)
+			if len(failedError) > 0 {
+				fmt.Println("Error while updating label*********", failedError)
+			}
 		}
 	}
 
