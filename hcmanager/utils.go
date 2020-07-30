@@ -69,13 +69,13 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(hcMetaData v1.ObjectMe
 		} else {
 
 			fmt.Println("HC Meta Label", hcMetaData.Labels["hardwareclassification-error"])
-			fmt.Println("Host Provisioning Status", string(host.Status.Provisioning.State))
+			fmt.Println("Host Provisioning Status", string(host.Status.ErrorType))
 
 			if hcMetaData.Labels["hardwareclassification-error"] == "All" {
 				if host.Status.ErrorMessage != "" {
 					failedHostList = append(failedHostList, host)
 				}
-			} else if hcMetaData.Labels["hardwareclassification-error"] == strings.ReplaceAll(string(host.Status.Provisioning.State), " ", "-") {
+			} else if hcMetaData.Labels["hardwareclassification-error"] == strings.ReplaceAll(string(host.Status.ErrorType), " ", "-") {
 				failedHostList = append(failedHostList, host)
 			}
 		}
