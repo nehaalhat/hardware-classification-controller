@@ -85,13 +85,6 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	// Get the new hardware classification manager
 	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
 
-	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
-	if ErrValidation != nil {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
-		hcReconciler.Log.Error(ErrValidation, ErrValidation.Error())
-		return ctrl.Result{}, nil
-	}
-
 	//Fetch baremetal host list for the given namespace
 	hostList, failedHostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
 	if err != nil {
@@ -107,6 +100,13 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 				fmt.Println("Error while updating label*********", failedError)
 			}
 		}
+	}
+
+	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
+	if ErrValidation != nil {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
+		hcReconciler.Log.Error(ErrValidation, ErrValidation.Error())
+		return ctrl.Result{}, nil
 	}
 
 	if len(hostList) == 0 {
