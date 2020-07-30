@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
 
@@ -74,7 +75,7 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(hcMetaData v1.ObjectMe
 				if host.Status.ErrorMessage != "" {
 					failedHostList = append(failedHostList, host)
 				}
-			} else if hcMetaData.Labels["hardwareclassification-error"] == string(host.Status.Provisioning.State) {
+			} else if hcMetaData.Labels["hardwareclassification-error"] == strings.ReplaceAll(string(host.Status.Provisioning.State), " ", "-") {
 				failedHostList = append(failedHostList, host)
 			}
 		}
