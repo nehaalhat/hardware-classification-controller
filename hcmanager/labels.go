@@ -107,7 +107,6 @@ func getHostName(hostName string, validHosts []string) bool {
 // LabelFailedHost set label of baremetal host
 func (mgr HardwareClassificationManager) LabelFailedHost(ctx context.Context,
 	hcMetaData v1.ObjectMeta, failedHosts []bmh.BareMetalHost) []string {
-	labelKey := FailedLabelName + hcMetaData.Name
 	var updateLabelError []string
 	for _, host := range failedHosts {
 		labels := host.GetLabels()
@@ -117,7 +116,8 @@ func (mgr HardwareClassificationManager) LabelFailedHost(ctx context.Context,
 
 		fmt.Println("Error Message of failed node ***********", host.Status.ErrorMessage)
 		// Update user provided labels else set default label
-		labels[labelKey] = strings.ReplaceAll(string(host.Status.ErrorType), " ", "-")
+		labels[FailedLabelName] = strings.ReplaceAll(string(host.Status.ErrorType), " ", "-")
+		fmt.Println("Label Value ********", strings.ReplaceAll(string(host.Status.ErrorType), " ", "-"))
 
 		mgr.Log.Info("Set Label", "BareMetalHost", host.Name)
 		// set updated labels to host
