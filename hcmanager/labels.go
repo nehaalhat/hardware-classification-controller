@@ -116,7 +116,7 @@ func (mgr HardwareClassificationManager) LabelFailedHost(ctx context.Context,
 
 		fmt.Println("Error Message of failed node ***********", host.Status.ErrorMessage)
 		// Update user provided labels else set default label
-		labels[labelKey] = host.Status.ErrorMessage
+		labels[labelKey] = host.Status.ErrorType
 
 		mgr.Log.Info("Set Label", "BareMetalHost", host.Name)
 		// set updated labels to host

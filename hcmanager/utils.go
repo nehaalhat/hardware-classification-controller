@@ -31,7 +31,7 @@ const (
 	//LabelName initial name to the label key as hardware classification group
 	LabelName = "hardwareclassification.metal3.io/"
 	//FailedLabelName initial name to the label key as hardware classification group
-	FailedLabelName = "failhardwareclassification.metal3.io/"
+	FailedLabelName = "FailHWCC"
 	//Status extract the baremetal host for status ready
 	Status = "ready"
 	//DefaultLabel if label is missing from the Extracted Hardware Profile
