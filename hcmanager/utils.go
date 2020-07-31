@@ -18,7 +18,6 @@ package hcmanager
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"strings"
 
@@ -67,10 +66,6 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(hcMetaData v1.ObjectMe
 		if host.Status.Provisioning.State == "ready" {
 			validHostList = append(validHostList, host)
 		} else {
-
-			fmt.Println("HC Meta Label", hcMetaData.Labels["hardwareclassification-error"])
-			fmt.Println("Host Provisioning Status", string(host.Status.ErrorType))
-
 			if hcMetaData.Labels["hardwareclassification-error"] == "All" {
 				if host.Status.ErrorMessage != "" {
 					failedHostList = append(failedHostList, host)

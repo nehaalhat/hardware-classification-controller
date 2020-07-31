@@ -17,7 +17,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	hwcc "hardware-classification-controller/api/v1alpha1"
@@ -104,7 +103,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		if len(failedHostList) > 0 {
 			failedError := hcManager.LabelFailedHost(ctx, hardwareClassification.ObjectMeta, failedHostList)
 			if len(failedError) > 0 {
-				fmt.Println("Error while updating label*********", failedError)
+				hcReconciler.Log.Error(nil, strings.Join(failedError, ","))
 			}
 		}
 	}

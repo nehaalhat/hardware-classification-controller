@@ -160,7 +160,7 @@ const (
 
 const (
 	//NoBaremetalHost no bmo host found message
-	NoBaremetalHost string = "No BareMetalHost Found"
+	NoBaremetalHost string = "No BareMetalHost Found in Ready State"
 	//UpdateLabelError if failed to update labels of baremetal host
 	UpdateLabelError string = "Failed to update labels of BareMetalHost"
 	//NOError no error occurred
