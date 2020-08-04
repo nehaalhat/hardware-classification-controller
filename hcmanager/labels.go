@@ -113,8 +113,8 @@ func (mgr HardwareClassificationManager) LabelFailedHost(ctx context.Context,
 			labels = make(map[string]string)
 		}
 
-		mgr.Log.Info("Failed node Error Type", host.Status.ErrorType)
-		mgr.Log.Info("Failed node Error Message", host.Status.ErrorMessage)
+		mgr.Log.Info("Failed node Error Type", host.Name, host.Status.ErrorType)
+		mgr.Log.Info("Failed node Error Message", host.Name, host.Status.ErrorMessage)
 
 		// Update user provided labels else set default label
 		labels[FailedLabelName] = strings.ReplaceAll(string(host.Status.ErrorType), " ", "-")
