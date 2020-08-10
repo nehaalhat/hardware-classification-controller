@@ -17,7 +17,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	"hardware-classification-controller/hcmanager"
 	"strings"
@@ -117,11 +116,9 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	//Extract the hardware details from the baremetal host list
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
 	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
-	fmt.Println("############################### Host List length :", len(hostList))
 	//Compare the host list with extracted profile and fetch the valid host names
 	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
-	fmt.Println("################################ Valid Host List length : ", len(validHosts))
 
 	updateLabelError := hcManager.UpdateLabels(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
 
@@ -140,11 +137,9 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 	// Below condition will set Matched & Unmatched count of Hosts in HWCC status
 	if len(hostList) > 0 {
-		hcmanager.SetHostCount(hardwareClassification, hwcc.MatchedCount(len(validHosts)), hwcc.UnmatchedCount(len(hostList)-len(validHosts)))
-		fmt.Println("################# Host Matched Unmatched status updated.##########")
+		hcmanager.SetHostCount(hardwareClassification, hwcc.MatchedCount(len(validHosts)), hwcc.UnmatchedCount(len(bmhList.Items)-len(validHosts)))
 	} else {
 		hcmanager.SetHostCount(hardwareClassification, hwcc.MatchedCountEmpty, hwcc.UnmatchedCountEmpty)
-		fmt.Println("################# Default Host Matched Unmatched status updated.##########")
 	}
 	if len(failedHostList) > 0 {
 		hcmanager.SetErrorHostCount(hardwareClassification, failedHostList)

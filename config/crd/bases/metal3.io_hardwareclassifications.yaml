@@ -15,11 +15,11 @@ spec:
     type: string
   - JSONPath: .status.matchedCount
     description: Total Matched hosts.
-    name: MatchedCount
+    name: MatchedHosts
     type: integer
   - JSONPath: .status.unmatchedCount
     description: Total Unmatched hosts.
-    name: UnmatchedCount
+    name: UnmatchedHosts
     type: integer
   - JSONPath: .status.errorHosts
     description: Total error hosts.
@@ -27,11 +27,11 @@ spec:
     type: integer
   - JSONPath: .status.registrationErrorHosts
     description: Total hosts in Registration error state.
-    name: Registration-Error-Hosts
+    name: RegistrationErrorHosts
     type: integer
   - JSONPath: .status.introspectionErrorHosts
     description: Total hosts in Introspection error state.
-    name: Introspection-Error-Hosts
+    name: IntrospectionErrorHosts
     type: integer
   - JSONPath: .status.errorMessage
     description: Most recent error

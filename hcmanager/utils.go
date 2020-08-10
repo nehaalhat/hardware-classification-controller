@@ -98,11 +98,13 @@ func SetStatus(hwc *hwcc.HardwareClassification,
 	hwc.Status.ErrorMessage = errorMessage
 }
 
+//SetHostCount update Matched & Unmatched Hosts in hardware classification status
 func SetHostCount(hwc *hwcc.HardwareClassification, MatchedHost hwcc.MatchedCount, UnmatchedHost hwcc.UnmatchedCount) {
 	hwc.Status.MatchedCount = MatchedHost
 	hwc.Status.UnmatchedCount = UnmatchedHost
 }
 
+//SetErrorHostCount update count of Error state Hosts in hardware classification status
 func SetErrorHostCount(hwc *hwcc.HardwareClassification, failedHosts []bmh.BareMetalHost) {
 	registrationErrorCount := 0
 	introspectionErrorCount := 0

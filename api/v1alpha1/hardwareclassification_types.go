@@ -227,11 +227,11 @@ type HardwareClassificationStatus struct {
 // +kubebuilder:resource:shortName=hwc;hc
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="ProfileMatchStatus",type="string",JSONPath=".status.profileMatchStatus",description="Profile Match Status"
-// +kubebuilder:printcolumn:name="MatchedCount",type="integer",JSONPath=".status.matchedCount",description="Total Matched hosts."
-// +kubebuilder:printcolumn:name="UnmatchedCount",type="integer",JSONPath=".status.unmatchedCount",description="Total Unmatched hosts."
+// +kubebuilder:printcolumn:name="MatchedHosts",type="integer",JSONPath=".status.matchedCount",description="Total Matched hosts."
+// +kubebuilder:printcolumn:name="UnmatchedHosts",type="integer",JSONPath=".status.unmatchedCount",description="Total Unmatched hosts."
 // +kubebuilder:printcolumn:name="ErrorHosts",type="integer",JSONPath=".status.errorHosts",description="Total error hosts."
-// +kubebuilder:printcolumn:name="Registration-Error-Hosts",type="integer",JSONPath=".status.registrationErrorHosts",description="Total hosts in Registration error state."
-// +kubebuilder:printcolumn:name="Introspection-Error-Hosts",type="integer",JSONPath=".status.introspectionErrorHosts",description="Total hosts in Introspection error state."
+// +kubebuilder:printcolumn:name="RegistrationErrorHosts",type="integer",JSONPath=".status.registrationErrorHosts",description="Total hosts in Registration error state."
+// +kubebuilder:printcolumn:name="IntrospectionErrorHosts",type="integer",JSONPath=".status.introspectionErrorHosts",description="Total hosts in Introspection error state."
 // +kubebuilder:printcolumn:name="Error",type="string",JSONPath=".status.errorMessage",description="Most recent error"
 
 // HardwareClassification is the Schema for the hardwareclassifications API
