@@ -13,6 +13,26 @@ spec:
     description: Profile Match Status
     name: ProfileMatchStatus
     type: string
+  - JSONPath: .status.matchedCount
+    description: Total Matched hosts.
+    name: MatchedCount
+    type: integer
+  - JSONPath: .status.unmatchedCount
+    description: Total Unmatched hosts.
+    name: UnmatchedCount
+    type: integer
+  - JSONPath: .status.errorHosts
+    description: Total error hosts.
+    name: ErrorHosts
+    type: integer
+  - JSONPath: .status.registrationErrorHosts
+    description: Total hosts in Registration error state.
+    name: Registration-Error-Hosts
+    type: integer
+  - JSONPath: .status.introspectionErrorHosts
+    description: Total hosts in Introspection error state.
+    name: Introspection-Error-Hosts
+    type: integer
   - JSONPath: .status.errorMessage
     description: Most recent error
     name: Error
@@ -150,6 +170,9 @@ spec:
           description: HardwareClassificationStatus defines the observed state of
             HardwareClassification
           properties:
+            errorHosts:
+              description: The count of Hosts in error state
+              type: integer
             errorMessage:
               description: The last error message reported by the hardwareclassification
                 system
@@ -157,10 +180,24 @@ spec:
             errorType:
               description: ErrorType indicates the type of failure encountered
               type: string
+            introspectionErrorHosts:
+              description: The count of hosts in introspection error state
+              type: integer
+            matchedCount:
+              description: The count of matched Hosts per profile reported by hardwareclassification
+                system
+              type: integer
             profileMatchStatus:
               description: ProfileMatchStatus identifies whether a applied profile
                 is matches or not
               type: string
+            registrationErrorHosts:
+              description: The count of hosts in registration error state
+              type: integer
+            unmatchedCount:
+              description: The count of unmatched Hosts per profile reported by hardwareclassification
+                system
+              type: integer
           type: object
       type: object
   version: v1alpha1

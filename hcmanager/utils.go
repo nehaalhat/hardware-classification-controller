@@ -98,6 +98,28 @@ func SetStatus(hwc *hwcc.HardwareClassification,
 	hwc.Status.ErrorMessage = errorMessage
 }
 
+func SetHostCount(hwc *hwcc.HardwareClassification, MatchedHost hwcc.MatchedCount, UnmatchedHost hwcc.UnmatchedCount) {
+	hwc.Status.MatchedCount = MatchedHost
+	hwc.Status.UnmatchedCount = UnmatchedHost
+}
+
+func SetErrorHostCount(hwc *hwcc.HardwareClassification, failedHosts []bmh.BareMetalHost) {
+	registrationErrorCount := 0
+	introspectionErrorCount := 0
+	for _, host := range failedHosts {
+		if host.Status.ErrorType == "registration error" {
+			registrationErrorCount += 1
+		} else if host.Status.ErrorType == "inspection error" {
+			introspectionErrorCount += 1
+		} else {
+			continue
+		}
+	}
+	hwc.Status.ErrorHosts = hwcc.ErrorHosts(len(failedHosts))
+	hwc.Status.RegistrationErrorHosts = hwcc.RegistrationErrorHosts(registrationErrorCount)
+	hwc.Status.IntrospectionErrorHosts = hwcc.IntrospectionErrorHosts(introspectionErrorCount)
+}
+
 //ValidateExtractedHardwareProfile it will validate the extracted hardware profile and log the warnings
 func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extractedProfile hwcc.HardwareCharacteristics) error {
 	if (extractedProfile.Cpu == nil) &&
