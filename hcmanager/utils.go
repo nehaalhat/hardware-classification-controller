@@ -108,11 +108,17 @@ func SetHostCount(hwc *hwcc.HardwareClassification, MatchedHost hwcc.MatchedCoun
 func SetErrorHostCount(hwc *hwcc.HardwareClassification, failedHosts []bmh.BareMetalHost) {
 	registrationErrorCount := 0
 	introspectionErrorCount := 0
+	provisioningErrorCount := 0
+	powerMgmtErrorCount := 0
 	for _, host := range failedHosts {
 		if host.Status.ErrorType == "registration error" {
 			registrationErrorCount += 1
 		} else if host.Status.ErrorType == "inspection error" {
 			introspectionErrorCount += 1
+		} else if host.Status.ErrorType == "provisioning error" {
+			provisioningErrorCount += 1
+		} else if host.Status.ErrorType == "power management error" {
+			powerMgmtErrorCount += 1
 		} else {
 			continue
 		}
@@ -120,6 +126,8 @@ func SetErrorHostCount(hwc *hwcc.HardwareClassification, failedHosts []bmh.BareM
 	hwc.Status.ErrorHosts = hwcc.ErrorHosts(len(failedHosts))
 	hwc.Status.RegistrationErrorHosts = hwcc.RegistrationErrorHosts(registrationErrorCount)
 	hwc.Status.IntrospectionErrorHosts = hwcc.IntrospectionErrorHosts(introspectionErrorCount)
+	hwc.Status.ProvisioningErrorHosts = hwcc.ProvisioningErrorHosts(provisioningErrorCount)
+	hwc.Status.PowerMgmtErrorHosts = hwcc.PowerMgmtErrorHosts(powerMgmtErrorCount)
 }
 
 //ValidateExtractedHardwareProfile it will validate the extracted hardware profile and log the warnings

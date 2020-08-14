@@ -33,6 +33,14 @@ spec:
     description: Total hosts in Introspection error state.
     name: IntrospectionErrorHosts
     type: integer
+  - JSONPath: .status.provisioningErrorHosts
+    description: Total hosts in Provisioning error state.
+    name: ProvisioningErrorHosts
+    type: integer
+  - JSONPath: .status.powerMgmtErrorHosts
+    description: Total hosts in Power Management error state.
+    name: PowerMgmtErrorHosts
+    type: integer
   - JSONPath: .status.errorMessage
     description: Most recent error
     name: Error
@@ -187,10 +195,16 @@ spec:
               description: The count of matched Hosts per profile reported by hardwareclassification
                 system
               type: integer
+            powerMgmtErrorHosts:
+              description: The count of hosts in power management error state
+              type: integer
             profileMatchStatus:
               description: ProfileMatchStatus identifies whether a applied profile
                 is matches or not
               type: string
+            provisioningErrorHosts:
+              description: The count of hosts in provisioning error state
+              type: integer
             registrationErrorHosts:
               description: The count of hosts in registration error state
               type: integer

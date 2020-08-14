@@ -180,15 +180,27 @@ type RegistrationErrorHosts int
 // Total hosts in Introspection error state
 type IntrospectionErrorHosts int
 
+// Total hosts in Provisioning error state
+type ProvisioningErrorHosts int
+
+// Total hosts in Power Management error state
+type PowerMgmtErrorHosts int
+
 const (
 	// ErrorHosts is count of Hosts in error state
 	ErrorHostsEmpty ErrorHosts = 0
 
-	// RegistrationErrorHosts is count of Hosts in registration error state
+	// RegistrationErrorHosts is count of Hosts in Registration error state
 	RegistrationErrorHostsEmpty RegistrationErrorHosts = 0
 
 	// IntrospectionErrorHosts is count of Hosts in Introspection error state
 	IntrospectionErrorHostsEmpty IntrospectionErrorHosts = 0
+
+	// ProvisioningErrorHosts is count of Hosts in Provisioning error state
+	ProvisioningErrorHostsEmpty ProvisioningErrorHosts = 0
+
+	// PowerMgmtHosts is count of Hosts in Power Management error state
+	PowerMgmtHostsEmpty PowerMgmtErrorHosts = 0
 )
 
 const (
@@ -219,6 +231,10 @@ type HardwareClassificationStatus struct {
 	RegistrationErrorHosts RegistrationErrorHosts `json:"registrationErrorHosts,omitempty"`
 	// The count of hosts in introspection error state
 	IntrospectionErrorHosts IntrospectionErrorHosts `json:"introspectionErrorHosts,omitempty"`
+	// The count of hosts in provisioning error state
+	ProvisioningErrorHosts ProvisioningErrorHosts `json:"provisioningErrorHosts,omitempty"`
+	// The count of hosts in power management error state
+	PowerMgmtErrorHosts PowerMgmtErrorHosts `json:"powerMgmtErrorHosts,omitempty"`
 	// The last error message reported by the hardwareclassification system
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
@@ -232,6 +248,8 @@ type HardwareClassificationStatus struct {
 // +kubebuilder:printcolumn:name="ErrorHosts",type="integer",JSONPath=".status.errorHosts",description="Total error hosts."
 // +kubebuilder:printcolumn:name="RegistrationErrorHosts",type="integer",JSONPath=".status.registrationErrorHosts",description="Total hosts in Registration error state."
 // +kubebuilder:printcolumn:name="IntrospectionErrorHosts",type="integer",JSONPath=".status.introspectionErrorHosts",description="Total hosts in Introspection error state."
+// +kubebuilder:printcolumn:name="ProvisioningErrorHosts",type="integer",JSONPath=".status.provisioningErrorHosts",description="Total hosts in Provisioning error state."
+// +kubebuilder:printcolumn:name="PowerMgmtErrorHosts",type="integer",JSONPath=".status.powerMgmtErrorHosts",description="Total hosts in Power Management error state."
 // +kubebuilder:printcolumn:name="Error",type="string",JSONPath=".status.errorMessage",description="Most recent error"
 
 // HardwareClassification is the Schema for the hardwareclassifications API
