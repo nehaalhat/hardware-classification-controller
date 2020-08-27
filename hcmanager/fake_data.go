@@ -42,17 +42,37 @@ func getExtractedHardwareProfile() hwcc.HardwareCharacteristics {
 
 }
 
-func getEmptyProfile() hwcc.HardwareCharacteristics {
-
-	return hwcc.HardwareCharacteristics{}
-}
-
-func getInvalidCpuProfile() hwcc.HardwareCharacteristics {
+func getMissingNicDetails() hwcc.HardwareCharacteristics {
 
 	return hwcc.HardwareCharacteristics{
 		Cpu: &hwcc.Cpu{
-			MaximumCount: 0,
-			MinimumCount: 0,
+			MaximumCount: 32,
+			MinimumCount: 32,
+		},
+		Disk: &hwcc.Disk{
+			MaximumCount:            9,
+			MaximumIndividualSizeGB: 558,
+			MinimumCount:            9,
+			MinimumIndividualSizeGB: 558,
+		},
+		Ram: &hwcc.Ram{
+			MaximumSizeGB: 192,
+			MinimumSizeGB: 192,
+		},
+	}
+
+}
+
+func getEmptyProfile() hwcc.HardwareCharacteristics {
+	return hwcc.HardwareCharacteristics{}
+}
+
+func getInvalidCPUProfile() hwcc.HardwareCharacteristics {
+
+	return hwcc.HardwareCharacteristics{
+		Cpu: &hwcc.Cpu{
+			MaximumCount:    0,
+			MinimumCount:    0,
 			MaximumSpeedMHz: 0,
 			MinimumSpeedMHz: 0,
 		},
@@ -81,7 +101,7 @@ func getInvalidNicProfile() hwcc.HardwareCharacteristics {
 	}
 }
 
-func getInvalidRamProfile() hwcc.HardwareCharacteristics {
+func getInvalidRAMProfile() hwcc.HardwareCharacteristics {
 
 	return hwcc.HardwareCharacteristics{
 		Ram: &hwcc.Ram{
@@ -98,8 +118,8 @@ func getObjectMeta() metav1.ObjectMeta {
 func getExtractedHardwareProfileRuntime() []runtime.Object {
 	expectedHardwareClassification := hwcc.HardwareCharacteristics{
 		Cpu: &hwcc.Cpu{
-			MaximumCount: 1,
-			MinimumCount: 1,
+			MaximumCount:    1,
+			MinimumCount:    1,
 			MaximumSpeedMHz: 3,
 			MinimumSpeedMHz: 4,
 		},

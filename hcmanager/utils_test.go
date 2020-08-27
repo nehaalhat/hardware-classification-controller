@@ -21,7 +21,7 @@ var _ = Describe("Hardware Classification Controller", func() {
 
 	It("Should fetch BaremetalHosts in ready state and under metal3 namespace", func() {
 		result, _, err := hcManager.FetchBmhHostList(getNamespace())
-		if err != nil {	
+		if err != nil {
 			Expect(len(result)).To(BeZero())
 		} else {
 			Expect(len(result)).Should(Equal(2))
@@ -29,42 +29,66 @@ var _ = Describe("Hardware Classification Controller", func() {
 
 	})
 
+	It("Should return error fetching BaremetalHosts", func() {
+		_, _, err := hcManager.FetchBmhHostList("sample")
+		if err != nil {
+			Expect(err).To(HaveOccurred())
+		}
+
+	})
+
 	It("Should validate extracted hardware profile", func() {
 		err := hcManager.ValidateExtractedHardwareProfile(getEmptyProfile())
-		if err != nil {	
+		if err != nil {
 			Expect(err).To(HaveOccurred())
 		}
 	})
 
 	It("Should validate extracted hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidCpuProfile())
-		if err != nil {	
+		result := hcManager.ValidateExtractedHardwareProfile(getExtractedHardwareProfile())
+		if result == nil {
+			Expect(result).Should(BeNil())
+		}
+	})
+
+	It("Should validate extracted hardware profile", func() {
+		err := hcManager.ValidateExtractedHardwareProfile(getInvalidCPUProfile())
+		if err != nil {
 			Expect(err).To(HaveOccurred())
 		}
 	})
 
 	It("Should validate extracted hardware profile", func() {
 		err := hcManager.ValidateExtractedHardwareProfile(getInvalidDiskProfile())
-		if err != nil {	
+		if err != nil {
 			Expect(err).To(HaveOccurred())
 		}
 	})
 
 	It("Should validate extracted hardware profile", func() {
+		hardwareClassification := &hwcc.HardwareClassification{}
 		err := hcManager.ValidateExtractedHardwareProfile(getInvalidNicProfile())
-		if err != nil {	
+		SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, err.Error())
+		if err != nil {
+			Expect(hardwareClassification.Status.ErrorType).Should(Equal(hwcc.ProfileMisConfigured))
 			Expect(err).To(HaveOccurred())
 		}
 	})
 
 	It("Should validate extracted hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidRamProfile())
-		if err != nil {	
+		err := hcManager.ValidateExtractedHardwareProfile(getInvalidRAMProfile())
+		if err != nil {
+			Expect(err).To(HaveOccurred())
+		}
+	})
+
+	It("Should validate extracted hardware profile", func() {
+		err := hcManager.ValidateExtractedHardwareProfile(getMissingNicDetails())
+		if err != nil {
 			Expect(err).To(HaveOccurred())
 		}
 	})
 })
-
 
 //setupSchemeMm Add the bmoapi to our scheme
 func setupSchemeMm() *runtime.Scheme {
