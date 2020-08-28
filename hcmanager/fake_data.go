@@ -21,8 +21,10 @@ func getExtractedHardwareProfile() hwcc.HardwareCharacteristics {
 
 	return hwcc.HardwareCharacteristics{
 		Cpu: &hwcc.Cpu{
-			MaximumCount: 32,
-			MinimumCount: 32,
+			MaximumCount:    50,
+			MinimumCount:    30,
+			MaximumSpeedMHz: 5000,
+			MinimumSpeedMHz: 3000,
 		},
 		Disk: &hwcc.Disk{
 			MaximumCount:            9,
@@ -112,7 +114,7 @@ func getInvalidRAMProfile() hwcc.HardwareCharacteristics {
 }
 
 func getObjectMeta() metav1.ObjectMeta {
-	return metav1.ObjectMeta{Name: "hardwareclassification-test"}
+	return metav1.ObjectMeta{Name: "testlabel"}
 }
 
 func getExtractedHardwareProfileRuntime() []runtime.Object {
@@ -150,10 +152,14 @@ func getExtractedHardwareProfileRuntime() []runtime.Object {
 
 func getHosts() []runtime.Object {
 
+	existinglabel := map[string]string{
+		"hardwareclassification.metal3.io/testlabel": "matches",
+	}
 	host0 := bmh.BareMetalHost{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "host-0",
 			Namespace: "metal3",
+			Labels:    existinglabel,
 		},
 		Status: bmh.BareMetalHostStatus{
 			Provisioning: bmh.ProvisionStatus{
@@ -185,6 +191,7 @@ func getHosts() []runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "host-1",
 			Namespace: "metal3",
+			Labels:    existinglabel,
 		},
 		Status: bmh.BareMetalHostStatus{
 			Provisioning: bmh.ProvisionStatus{
@@ -214,6 +221,7 @@ func getHosts() []runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "host-2",
 			Namespace: "metal3",
+			Labels:    existinglabel,
 		},
 		Status: bmh.BareMetalHostStatus{
 			Provisioning: bmh.ProvisionStatus{
@@ -245,6 +253,7 @@ func getHosts() []runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "host-3",
 			Namespace: "test",
+			Labels:    existinglabel,
 		},
 		Status: bmh.BareMetalHostStatus{
 			Provisioning: bmh.ProvisionStatus{
@@ -273,4 +282,30 @@ func getHosts() []runtime.Object {
 	}
 
 	return []runtime.Object{&host0, &host1, &host2, &host3}
+}
+
+func getExtractedCPUDetails() hwcc.HardwareCharacteristics {
+	return hwcc.HardwareCharacteristics{
+		Cpu: &hwcc.Cpu{
+			MaximumCount:    30,
+			MinimumCount:    50,
+			MaximumSpeedMHz: 50000,
+			MinimumSpeedMHz: 30000,
+		},
+		Disk: &hwcc.Disk{
+			MaximumCount:            9,
+			MaximumIndividualSizeGB: 558,
+			MinimumCount:            9,
+			MinimumIndividualSizeGB: 558,
+		},
+		Nic: &hwcc.Nic{
+			MaximumCount: 4,
+			MinimumCount: 4,
+		},
+		Ram: &hwcc.Ram{
+			MaximumSizeGB: 192,
+			MinimumSizeGB: 192,
+		},
+	}
+
 }

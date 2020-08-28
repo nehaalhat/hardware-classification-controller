@@ -33,7 +33,6 @@ var _ = Describe("Hcmanager", func() {
 			Expect(len(result)).Should(Equal(0))
 		} else {
 			validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(getExtractedHardwareProfile(), result)
-
 			if len(validatedHardwareDetails) != 0 {
 				comparedHost := hcManager.MinMaxFilter(getTestProfileName(), validatedHardwareDetails, getExtractedHardwareProfile())
 				if len(comparedHost) != 0 {
@@ -49,4 +48,28 @@ var _ = Describe("Hcmanager", func() {
 			}
 		}
 	})
+
+	It("Failed CPU Details", func() {
+		result, _, err := hcManager.FetchBmhHostList(getNamespace())
+		if err != nil {
+			Expect(len(result)).Should(Equal(0))
+		} else {
+			validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(getExtractedCPUDetails(), result)
+			if len(validatedHardwareDetails) != 0 {
+
+				comparedHost := hcManager.MinMaxFilter(getTestProfileName(), validatedHardwareDetails, getExtractedCPUDetails())
+				if len(comparedHost) != 0 {
+					Expect(len(comparedHost)).To(Equal(1))
+					for _, host := range comparedHost {
+						Expect(host).To(Equal("host-2"))
+					}
+				} else {
+					Expect(len(comparedHost)).To(BeZero())
+				}
+			} else {
+				Expect(len(validatedHardwareDetails)).To(BeZero())
+			}
+		}
+	})
+
 })

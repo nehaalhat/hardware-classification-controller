@@ -8,15 +8,15 @@ metadata:
 spec:
   hardwareCharacteristics:
       cpu:
-         minimumCount: 48
-         maximumCount: 72
+         minimumCount: 4
+         maximumCount: 8
          minimumSpeedMHz: 2600
          maximumSpeedMHz: 3600
       disk:
          minimumCount: 1
          maximumCount: 8
-         minimumIndividualSizeGB: 200
-         maximumIndividualSizeGB: 3000
+         minimumIndividualSizeGB: 40
+         maximumIndividualSizeGB: 60
       ram:
          minimumSizeGB: 6
          maximumSizeGB: 180
